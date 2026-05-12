@@ -21,16 +21,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-cta:hover{background:var(--teal-light)}
 .hero{min-height:100vh;background:linear-gradient(135deg,#051218 0%,#0d2d3f 45%,#0b3d38 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 40%,rgba(11,158,153,0.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(245,200,66,0.07) 0%,transparent 50%);pointer-events:none}
-.hero-tag{display:inline-block;border:1px solid var(--teal);color:var(--teal-light);padding:5px 18px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;animation:fadeUp .6s ease both}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,9vw,110px);line-height:1;letter-spacing:3px;animation:fadeUp .7s .1s ease both}
+.hero-tag{display:inline-block;border:1px solid var(--teal);color:var(--teal-light);padding:5px 18px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;animation:fadeUp .6s ease both;position:relative;z-index:1}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,9vw,110px);line-height:1;letter-spacing:3px;animation:fadeUp .7s .1s ease both;position:relative;z-index:1}
 .hero h1 span{color:var(--gold)}
-.hero p{font-size:clamp(15px,2vw,20px);color:var(--gray);max-width:580px;margin:18px auto 36px;line-height:1.65;animation:fadeUp .7s .2s ease both}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+.hero p{font-size:clamp(15px,2vw,20px);color:var(--gray);max-width:580px;margin:18px auto 36px;line-height:1.65;animation:fadeUp .7s .2s ease both;position:relative;z-index:1}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both;position:relative;z-index:1}
 .btn-primary{background:var(--teal);color:var(--white);padding:15px 32px;border-radius:5px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:2px solid var(--teal);white-space:nowrap}
 .btn-primary:hover{background:var(--teal-light);border-color:var(--teal-light);transform:translateY(-2px)}
 .btn-outline{background:transparent;color:var(--white);padding:15px 32px;border-radius:5px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:2px solid rgba(255,255,255,0.3);white-space:nowrap}
 .btn-outline:hover{border-color:var(--teal-light);color:var(--teal-light);transform:translateY(-2px)}
-.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:var(--gray);font-size:11px;letter-spacing:2px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:var(--gray);font-size:10px;letter-spacing:3px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.6}
 .scroll-hint::after{content:'';width:1px;height:36px;background:var(--teal);animation:pulse 1.6s infinite}
 .section-label{text-align:center;padding:72px 24px 0}
 .section-label .tag{display:inline-block;background:rgba(11,158,153,0.12);border:1px solid var(--teal);color:var(--teal-light);padding:4px 16px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
@@ -146,7 +146,7 @@ footer p{color:var(--gray);font-size:12px}
     <a href="#tours" class="btn-primary">See All Tours</a>
     <a href="#how" class="btn-outline">How It Works</a>
   </div>
-  <div class="scroll-hint">Scroll</div>
+  
 </section>
 
 <div class="section-label" id="tours">
@@ -160,7 +160,7 @@ footer p{color:var(--gray);font-size:12px}
   <!-- ISLA MUJERES -->
   <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=85" alt="Catamaran Isla Mujeres Cancun">
+      <img src="isla-mujeres.jpeg" alt="Catamaran Isla Mujeres Cancun">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">By Catamaran</div>
       <div class="tour-pickup">⏰ Pick-up: 8:30 AM</div>
@@ -181,6 +181,9 @@ footer p{color:var(--gray);font-size:12px}
       </div>
       <div class="alert-warning">
         ⚠️ <strong>Not included:</strong> Federal dock & marine park tax — <strong>$20 USD / $380 MXN</strong> (Mexican nationals with ID: $330 MXN). Paid in cash at the marina.
+      </div>
+      <div style="background:rgba(11,158,153,0.07);border:1px solid rgba(11,158,153,0.25);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--off-white);line-height:1.6">
+        🚌 <strong>Pick-up zone:</strong> This price applies only to hotels in the <strong>Cancún Hotel Zone</strong>. If you're staying in <strong>Riviera Maya or Playa del Carmen</strong>, please contact us before booking to confirm your rate. <a href="https://wa.me/529982168410" style="color:var(--teal-light);font-weight:700">Contact us here →</a>
       </div>
       <details>
         <summary>▸ View day itinerary</summary>
@@ -210,7 +213,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$1,010 <span>MXN</span></div><div class="equiv">≈ USD $54.59</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$950 <span>MXN</span></div><div class="equiv">≈ USD $51.35</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest on board!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price</div>
       </div>
       <button class="book-btn" onclick="openModal('Isla Mujeres by Catamaran','isla')">Reserve My Spot →</button>
@@ -220,7 +223,7 @@ footer p{color:var(--gray);font-size:12px}
   <!-- XCARET -->
   <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=85" alt="Xcaret Park Mexico">
+      <img src="xcaret.jpeg" alt="Xcaret Park Mexico">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">Xcaret Plus</div>
       <div class="tour-pickup">⏰ Pick-up: 7:15 AM</div>
@@ -252,7 +255,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$162 <span>USD</span></div><div class="equiv">≈ MXN $2,997</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$126 <span>USD</span></div><div class="equiv">≈ MXN $2,331</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest on board!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xcaret Plus','xcaret')">Reserve My Spot →</button>
@@ -262,7 +265,7 @@ footer p{color:var(--gray);font-size:12px}
   <!-- XEL-HA -->
   <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85" alt="Xel-Ha Natural Park Riviera Maya">
+      <img src="xelha.jpeg" alt="Xel-Ha Natural Park Riviera Maya">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">Natural Park</div>
       <div class="tour-pickup">⏰ Pick-up: 7:15 AM</div>
@@ -294,7 +297,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$115 <span>USD</span></div><div class="equiv">≈ MXN $2,128</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$91 <span>USD</span></div><div class="equiv">≈ MXN $1,684</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest on board!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xel-Há Natural Park','xelha')">Reserve My Spot →</button>
@@ -313,7 +316,7 @@ footer p{color:var(--gray);font-size:12px}
     <div class="how-steps">
       <div class="step"><div class="step-num">1</div><h4>Choose Your Tour</h4><p>Pick from Isla Mujeres, Xcaret Plus, or Xel-Há. Select your date and number of guests.</p></div>
       <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with a fixed deposit of $299 MXN per booking. Fast, safe card payment.</p></div>
-      <div class="step"><div class="step-num">3</div><h4>Enjoy & Pay the Rest</h4><p>We pick you up at your hotel. Pay the balance on board and enjoy paradise!</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Enjoy & Pay the Rest</h4><p>We pick you up at your hotel. Pay the balance <strong>in cash on board</strong> and enjoy paradise!</p></div>
     </div>
   </div>
 </section>
