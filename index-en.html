@@ -332,27 +332,48 @@ footer p{color:var(--gray);font-size:12px}
   <p>© 2026 Nexora | Kazzan. All rights reserved. Cancún, Quintana Roo, México.</p>
 </footer>
 
-<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
-  <div class="modal">
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <h3>Reserve Your Spot</h3>
     <div class="modal-tour-label" id="modal-tour-name">—</div>
-    <div class="modal-summary">
-      <div class="ms-row"><span>Tour</span><span id="ms-tour">—</span></div>
-      <div class="ms-row"><span>Guests</span><span id="ms-guests">—</span></div>
-      <div class="ms-row"><span>Deposit today</span><span style="color:var(--gold)">$299 MXN</span></div>
+
+    <div class="form-group">
+      <label>What is your nationality?</label>
+      <div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid rgba(11,158,153,0.3);">
+        <button id="btn-ext" onclick="setNacionalidad('ext')" style="flex:1;padding:10px;background:var(--teal);color:#fff;border:none;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">International</button>
+        <button id="btn-nac" onclick="setNacionalidad('nac')" style="flex:1;padding:10px;background:transparent;color:var(--gray);border:none;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">National</button>
+      </div>
     </div>
-    <div class="deposit-box">
-      <p>Amount due today (fixed deposit per booking)</p>
-      <div class="dep-amount">$299 MXN</div>
-      <div class="dep-detail">One-time deposit · Rest paid on board</div>
-    </div>
-    <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name" id="f-name"></div>
-    <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" id="f-email"></div>
+
     <div class="form-row">
       <div class="form-group"><label>Adults</label><select id="f-adults" onchange="updateSummary()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
       <div class="form-group"><label>Children (≤11 yrs)</label><select id="f-children" onchange="updateSummary()"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
     </div>
+
+    <div class="modal-summary">
+      <div class="ms-row"><span>Tour</span><span id="ms-tour">—</span></div>
+      <div class="ms-row"><span>Guests</span><span id="ms-guests">—</span></div>
+      <div class="ms-row"><span>Adult price</span><span id="ms-price-adult">—</span></div>
+      <div class="ms-row"><span>Child price</span><span id="ms-price-kid">—</span></div>
+      <div class="ms-row" style="font-size:15px;padding-top:8px;"><span>Tour total</span><span id="ms-total" style="color:var(--white);">—</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Pay now</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;">$299 MXN</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:3px;">Deposit by card</div>
+      </div>
+      <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--teal-light);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Pay on board</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--teal-light);line-height:1;" id="ms-balance">—</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:3px;">💵 Cash only</div>
+      </div>
+    </div>
+
+    <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name" id="f-name"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" id="f-email"></div>
     <div class="form-group"><label>Tour Date</label><input type="date" id="f-date"></div>
     <div class="form-group"><label>Hotel / Pickup Address</label><input type="text" placeholder="Hotel name or address" id="f-hotel"></div>
     <div class="form-group">
@@ -371,122 +392,147 @@ const stripe = Stripe('pk_live_51TOshV1gHtpjQ4WKSYVrFy2jqX8wBqpwg3UHfYnzpZlpIj61
 const elements = stripe.elements();
 const cardElement = elements.create('card', {
   style: {
-    base: { color: '#ffffff', fontFamily: 'Barlow, sans-serif', fontSize: '15px', '::placeholder': { color: '#8ab2b0' } },
-    invalid: { color: '#ff6b6b' }
+    base: { color:'#ffffff', fontFamily:'Barlow, sans-serif', fontSize:'15px', '::placeholder':{ color:'#8ab2b0' } },
+    invalid: { color:'#ff6b6b' }
   }
 });
-
-let currentTour = '';
-let cardMounted = false;
-
-function switchTab(btn, gridId) {
-  const block = btn.closest('.pricing-block');
-  block.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+const PRICES = {
+  isla:   { ext:{ adult:1010, kid:950  }, nac:{ adult:1010, kid:950  } },
+  xcaret: { ext:{ adult:3312, kid:2535 }, nac:{ adult:2997, kid:2331 } },
+  xelha:  { ext:{ adult:2331, kid:1813 }, nac:{ adult:2128, kid:1684 } }
+};
+const USD_PRICES = {
+  isla:   { ext:{ adult:54.59, kid:51.35 }, nac:{ adult:54.59, kid:51.35 } },
+  xcaret: { ext:{ adult:179,   kid:137   }, nac:{ adult:162,   kid:126   } },
+  xelha:  { ext:{ adult:126,   kid:98    }, nac:{ adult:115,   kid:91    } }
+};
+const DEPOSIT = 299;
+let currentTour='', currentNac='ext', cardMounted=false;
+function fmt(n){ return n.toLocaleString('en-US'); }
+function setNacionalidad(type){
+  currentNac=type;
+  document.getElementById('btn-ext').style.background = type==='ext'?'var(--teal)':'transparent';
+  document.getElementById('btn-ext').style.color      = type==='ext'?'#fff':'var(--gray)';
+  document.getElementById('btn-nac').style.background = type==='nac'?'var(--teal)':'transparent';
+  document.getElementById('btn-nac').style.color      = type==='nac'?'#fff':'var(--gray)';
+  updateSummary();
+}
+function updateSummary(){
+  if(!currentTour) return;
+  const adults=parseInt(document.getElementById('f-adults').value)||1;
+  const kids=parseInt(document.getElementById('f-children').value)||0;
+  const p=PRICES[currentTour][currentNac];
+  const pu=USD_PRICES[currentTour][currentNac];
+  const totalMXN=(adults*p.adult)+(kids*p.kid);
+  const balance=totalMXN-DEPOSIT;
+  document.getElementById('ms-price-adult').textContent=`$${fmt(p.adult)} MXN (≈ $${pu.adult} USD)`;
+  document.getElementById('ms-price-kid').textContent=kids>0?`$${fmt(p.kid)} MXN (≈ $${pu.kid} USD)`:'—';
+  document.getElementById('ms-guests').textContent=adults+' adult(s)'+(kids>0?', '+kids+' child(ren)':'');
+  document.getElementById('ms-total').textContent=`$${fmt(totalMXN)} MXN`;
+  document.getElementById('ms-balance').textContent=`$${fmt(balance)} MXN`;
+}
+function switchTab(btn,gridId){
+  const block=btn.closest('.pricing-block');
+  block.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  block.querySelectorAll('.price-grid').forEach(g => g.classList.remove('active'));
+  block.querySelectorAll('.price-grid').forEach(g=>g.classList.remove('active'));
   document.getElementById(gridId).classList.add('active');
 }
-
-function openModal(tourName, tourKey) {
-  currentTour = tourKey;
-  document.getElementById('modal-tour-name').textContent = tourName;
-  document.getElementById('ms-tour').textContent = tourName;
-  document.getElementById('ms-guests').textContent = '—';
-  const t = new Date(); t.setDate(t.getDate() + 1);
-  document.getElementById('f-date').min = t.toISOString().split('T')[0];
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  if (!cardMounted) {
+function openModal(tourName,tourKey){
+  currentTour=tourKey; currentNac='ext';
+  document.getElementById('modal-tour-name').textContent=tourName;
+  document.getElementById('ms-tour').textContent=tourName;
+  setNacionalidad('ext');
+  const t=new Date(); t.setDate(t.getDate()+1);
+  document.getElementById('f-date').min=t.toISOString().split('T')[0];
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!cardMounted){
     cardElement.mount('#card-element');
-    cardElement.on('change', e => {
-      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
-    });
-    cardMounted = true;
+    cardElement.on('change',e=>{document.getElementById('card-errors').textContent=e.error?e.error.message:'';});
+    cardMounted=true;
   }
   updateSummary();
 }
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-  document.body.style.overflow = '';
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
 }
-
-function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
-
-function updateSummary() {
-  const adults = parseInt(document.getElementById('f-adults').value) || 1;
-  const kids   = parseInt(document.getElementById('f-children').value) || 0;
-  document.getElementById('ms-guests').textContent = adults + ' adult(s)' + (kids > 0 ? ', ' + kids + ' child(ren)' : '');
-}
-
-async function submitBooking() {
-  const name  = document.getElementById('f-name').value.trim();
-  const email = document.getElementById('f-email').value.trim();
-  const date  = document.getElementById('f-date').value;
-  const hotel = document.getElementById('f-hotel').value.trim();
-  const adults = document.getElementById('f-adults').value;
-  const kids   = document.getElementById('f-children').value;
-  if (!name || !email || !date || !hotel) {
-    alert('Please fill in all fields before continuing.');
-    return;
-  }
-  const btn = document.getElementById('submit-btn');
-  btn.textContent = 'Processing...';
-  btn.disabled = true;
-
-  try {
-    const { paymentMethod, error } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardElement,
-      billing_details: { name, email }
-    });
-
-    if (error) {
-      document.getElementById('card-errors').textContent = error.message;
-      btn.textContent = 'Pay $299 MXN & Secure My Spot';
-      btn.disabled = false;
-      return;
+function handleOverlayClick(e){ if(e.target.id==='modal-overlay') closeModal(); }
+async function submitBooking(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const date=document.getElementById('f-date').value;
+  const hotel=document.getElementById('f-hotel').value.trim();
+  const adults=parseInt(document.getElementById('f-adults').value)||1;
+  const kids=parseInt(document.getElementById('f-children').value)||0;
+  if(!name||!email||!date||!hotel){ alert('Please fill in all fields before continuing.'); return; }
+  const p=PRICES[currentTour][currentNac];
+  const totalMXN=(adults*p.adult)+(kids*p.kid);
+  const balance=totalMXN-DEPOSIT;
+  const tourLabel=document.getElementById('modal-tour-name').textContent;
+  const btn=document.getElementById('submit-btn');
+  btn.textContent='Processing...'; btn.disabled=true;
+  try{
+    const {paymentMethod,error}=await stripe.createPaymentMethod({type:'card',card:cardElement,billing_details:{name,email}});
+    if(error){
+      document.getElementById('card-errors').textContent=error.message;
+      btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false; return;
     }
-
-    const response = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        paymentMethodId: paymentMethod.id,
-        name, email, date, hotel,
-        tour: currentTour,
-        guests: adults + ' adult(s), ' + kids + ' child(ren)'
-      })
+    const response=await fetch('/api/checkout',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({paymentMethodId:paymentMethod.id,name,email,date,hotel,tour:tourLabel,
+        guests:adults+' adult(s)'+(kids>0?', '+kids+' child(ren)':''),
+        nationality:currentNac==='ext'?'International':'National',totalMXN,balance})
     });
-
-    const result = await response.json();
-
-    if (result.success) {
-      document.getElementById('modal').innerHTML = `
-        <div style="text-align:center;padding:40px 20px">
-          <div style="font-size:56px;margin-bottom:16px">🎉</div>
-          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:8px">Booking Confirmed!</h3>
-          <p style="color:var(--teal-light);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px">${currentTour}</p>
-          <p style="color:var(--gray);font-size:14px;line-height:1.7">Your confirmation will be sent to<br><strong style="color:var(--white)">${email}</strong></p>
-          <p style="color:var(--gray);font-size:13px;margin-top:12px">Pick-up: <strong style="color:var(--white)">${hotel}</strong> · ${date}</p>
-          <button onclick="closeModal()" style="margin-top:28px;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:12px 32px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Close</button>
+    const result=await response.json();
+    if(result.success){
+      document.getElementById('modal').innerHTML=`
+        <div style="padding:32px 20px">
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="font-size:52px;margin-bottom:12px">🎉</div>
+            <h3 style="font-family:'Bebas Neue',sans-serif;font-size:34px;margin-bottom:4px">Booking Confirmed!</h3>
+            <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${tourLabel}</p>
+          </div>
+          <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;">
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Name</span><strong>${name}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Email</span><strong>${email}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Date</span><strong>${date}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Pick-up</span><strong>${hotel}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Guests</span><strong>${adults} adult(s)${kids>0?', '+kids+' child(ren)':''}</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Tour total</span><strong>$${fmt(totalMXN)} MXN</strong></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
+              <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">✅ Already paid</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;">$299 MXN</div>
+              <div style="font-size:10px;color:var(--gray);margin-top:3px;">Deposit by card</div>
+            </div>
+            <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
+              <div style="font-size:10px;color:var(--teal-light);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">💵 Pay on board</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--teal-light);line-height:1;">$${fmt(balance)} MXN</div>
+              <div style="font-size:10px;color:var(--gold);margin-top:3px;font-weight:700;">Cash only</div>
+            </div>
+          </div>
+          <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;">
+            💵 Remember to bring <strong>$${fmt(balance)} MXN in cash</strong> on the day of your tour to pay on board.
+          </div>
+          <p style="color:var(--gray);font-size:12px;text-align:center;margin-bottom:20px">Your confirmation will be sent to <strong style="color:var(--white)">${email}</strong></p>
+          <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Close</button>
         </div>`;
     } else {
-      document.getElementById('card-errors').textContent = result.error || 'Payment error. Please try again.';
-      btn.textContent = 'Pay $299 MXN & Secure My Spot';
-      btn.disabled = false;
+      document.getElementById('card-errors').textContent=result.error||'Payment error. Please try again.';
+      btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false;
     }
-  } catch(err) {
-    document.getElementById('card-errors').textContent = 'Connection error. Please try again.';
-    btn.textContent = 'Pay $299 MXN & Secure My Spot';
-    btn.disabled = false;
+  } catch(err){
+    document.getElementById('card-errors').textContent='Connection error. Please try again.';
+    btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false;
   }
 }
-
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
-}, { threshold: 0.08 });
-document.querySelectorAll('.tour-card,.step').forEach(el => {
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});
+},{threshold:0.08});
+document.querySelectorAll('.tour-card,.step').forEach(el=>{
   el.style.opacity='0'; el.style.transform='translateY(28px)';
   el.style.transition='opacity .6s ease, transform .6s ease';
   obs.observe(el);
