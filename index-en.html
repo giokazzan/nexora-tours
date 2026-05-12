@@ -3,375 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora | Kazzan — Tours Cancún</title>
+<title>Nexora | Kazzan — Cancún Tours</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --teal: #0b9e99;
-    --teal-dark: #076b68;
-    --teal-light: #14c6bf;
-    --gold: #f5c842;
-    --navy: #071a26;
-    --navy-mid: #0d2d3f;
-    --white: #ffffff;
-    --off-white: #f0f8f7;
-    --gray: #8ab2b0;
-    --danger: #e04040;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'Barlow', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    overflow-x: hidden;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 32px;
-    background: rgba(7,26,38,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(11,158,153,0.25);
-  }
-  .nav-logo { display: flex; align-items: center; gap: 10px; }
-  .nav-logo span { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--white); }
-  .nav-logo .sep { color: var(--teal); }
-  .nav-logo .kaz { color: var(--gold); }
-  .nav-links { display: flex; gap: 28px; list-style: none; }
-  .nav-links a { color: var(--gray); text-decoration: none; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; transition: color .2s; }
-  .nav-links a:hover { color: var(--teal-light); }
-  .nav-cta {
-    background: var(--teal); color: var(--white); border: none; border-radius: 4px;
-    padding: 10px 22px; font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 13px;
-    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background .2s;
-    text-decoration: none;
-  }
-  .nav-cta:hover { background: var(--teal-light); }
-
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #051218 0%, #0d2d3f 40%, #0b3d38 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 120px 24px 80px;
-    position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 60% 40%, rgba(11,158,153,0.18) 0%, transparent 65%),
-                radial-gradient(ellipse at 20% 80%, rgba(245,200,66,0.08) 0%, transparent 50%);
-    pointer-events: none;
-  }
-  .hero-tag {
-    display: inline-block;
-    border: 1px solid var(--teal);
-    color: var(--teal-light);
-    padding: 5px 18px; border-radius: 50px;
-    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    margin-bottom: 24px;
-    animation: fadeUp .6s ease both;
-  }
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 10vw, 120px);
-    line-height: 1;
-    letter-spacing: 3px;
-    animation: fadeUp .7s .1s ease both;
-  }
-  .hero h1 span { color: var(--gold); }
-  .hero p {
-    font-size: clamp(16px, 2.5vw, 22px);
-    color: var(--gray);
-    max-width: 640px;
-    margin: 20px auto 40px;
-    line-height: 1.6;
-    animation: fadeUp .7s .2s ease both;
-  }
-  .hero-btns {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-    animation: fadeUp .7s .3s ease both;
-  }
-  .btn-primary {
-    background: var(--teal); color: var(--white);
-    padding: 16px 36px; border-radius: 5px;
-    font-weight: 700; font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
-    text-decoration: none; transition: all .2s; border: 2px solid var(--teal);
-  }
-  .btn-primary:hover { background: var(--teal-light); border-color: var(--teal-light); transform: translateY(-2px); }
-  .btn-outline {
-    background: transparent; color: var(--white);
-    padding: 16px 36px; border-radius: 5px;
-    font-weight: 700; font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
-    text-decoration: none; transition: all .2s; border: 2px solid rgba(255,255,255,0.3);
-  }
-  .btn-outline:hover { border-color: var(--teal-light); color: var(--teal-light); transform: translateY(-2px); }
-  .scroll-hint {
-    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-    color: var(--gray); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    animation: fadeUp .8s .5s ease both;
-  }
-  .scroll-hint::after {
-    content: ''; width: 1px; height: 40px; background: var(--teal);
-    animation: pulse 1.5s infinite;
-  }
-
-  /* ── SECTION HEADER ── */
-  .section-label {
-    text-align: center;
-    padding: 80px 24px 0;
-  }
-  .section-label .tag {
-    display: inline-block;
-    background: rgba(11,158,153,0.15);
-    border: 1px solid var(--teal);
-    color: var(--teal-light);
-    padding: 4px 16px; border-radius: 50px;
-    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .section-label h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 6vw, 72px);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-  .section-label h2 span { color: var(--teal-light); }
-  .section-label p {
-    color: var(--gray); font-size: 17px; margin-top: 12px; max-width: 560px; margin-inline: auto;
-  }
-
-  /* ── TOURS ── */
-  .tours { padding: 60px 24px 100px; max-width: 1200px; margin: 0 auto; }
-  .tour-card {
-    background: var(--navy-mid);
-    border: 1px solid rgba(11,158,153,0.2);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 64px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    transition: border-color .3s;
-  }
-  .tour-card:hover { border-color: rgba(11,158,153,0.5); }
-  .tour-card.reverse { direction: rtl; }
-  .tour-card.reverse > * { direction: ltr; }
-  .tour-img {
-    position: relative; overflow: hidden;
-    min-height: 460px;
-  }
-  .tour-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
-  .tour-card:hover .tour-img img { transform: scale(1.04); }
-  .tour-img-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to right, transparent 50%, var(--navy-mid) 100%);
-  }
-  .tour-card.reverse .tour-img-overlay {
-    background: linear-gradient(to left, transparent 50%, var(--navy-mid) 100%);
-  }
-  .tour-badge {
-    position: absolute; top: 20px; left: 20px;
-    background: var(--teal); color: var(--white);
-    padding: 5px 14px; border-radius: 50px;
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  }
-  .tour-pickup {
-    position: absolute; bottom: 20px; left: 20px;
-    background: rgba(7,26,38,0.85);
-    border: 1px solid var(--teal);
-    color: var(--teal-light); padding: 6px 14px; border-radius: 6px;
-    font-size: 12px; font-weight: 700; letter-spacing: 1px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .tour-body { padding: 44px 44px 44px 36px; display: flex; flex-direction: column; justify-content: space-between; }
-  .tour-card.reverse .tour-body { padding: 44px 36px 44px 44px; }
-  .tour-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(42px, 5vw, 64px);
-    line-height: 1; letter-spacing: 2px;
-    color: var(--white);
-    margin-bottom: 6px;
-  }
-  .tour-subtitle { color: var(--teal-light); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
-  .tour-desc { color: var(--gray); font-size: 15px; line-height: 1.65; margin-bottom: 24px; }
-  .tour-features {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    margin-bottom: 28px;
-  }
-  .feat {
-    display: flex; align-items: center; gap: 7px;
-    background: rgba(11,158,153,0.1);
-    border: 1px solid rgba(11,158,153,0.25);
-    border-radius: 6px; padding: 6px 12px;
-    font-size: 12px; font-weight: 600; color: var(--off-white);
-  }
-  .feat-icon { font-size: 14px; }
-
-  /* ── PRICING TABS ── */
-  .pricing-block { margin-bottom: 28px; }
-  .pricing-tabs { display: flex; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid rgba(11,158,153,0.3); margin-bottom: 16px; }
-  .ptab {
-    flex: 1; padding: 10px 16px; background: transparent; border: none;
-    color: var(--gray); font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 13px;
-    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .2s;
-  }
-  .ptab.active { background: var(--teal); color: var(--white); }
-  .ptab:not(.active):hover { background: rgba(11,158,153,0.15); color: var(--white); }
-  .price-grid { display: none; }
-  .price-grid.active { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .price-item {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px; padding: 16px;
-  }
-  .price-item .who { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; }
-  .price-item .usd { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--white); line-height: 1; }
-  .price-item .usd span { font-size: 16px; color: var(--gray); }
-  .price-item .mxn { font-size: 13px; color: var(--teal-light); font-weight: 600; margin-top: 2px; }
-  .price-note {
-    font-size: 12px; color: var(--gold); font-weight: 600;
-    background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2);
-    border-radius: 6px; padding: 8px 12px; margin-top: 12px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .age-note { font-size: 11px; color: var(--gray); margin-top: 8px; }
-
-  /* ── BOOK BTN ── */
-  .book-btn {
-    display: block; width: 100%;
-    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
-    color: var(--white); border: none; border-radius: 8px;
-    padding: 16px; font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 15px;
-    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .2s;
-    text-align: center; text-decoration: none;
-  }
-  .book-btn:hover { background: linear-gradient(135deg, var(--teal), var(--teal-light)); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(11,158,153,0.4); }
-
-  /* ── HOW IT WORKS ── */
-  .how { background: rgba(11,158,153,0.05); border-top: 1px solid rgba(11,158,153,0.15); border-bottom: 1px solid rgba(11,158,153,0.15); padding: 80px 24px; }
-  .how-inner { max-width: 900px; margin: 0 auto; text-align: center; }
-  .how-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; margin-top: 52px; }
-  .step { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .step-num {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: var(--teal); color: var(--white);
-    font-family: 'Bebas Neue', sans-serif; font-size: 26px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .step h4 { font-size: 16px; font-weight: 700; }
-  .step p { color: var(--gray); font-size: 14px; line-height: 1.55; }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(5,15,22,0.92);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    opacity: 0; pointer-events: none; transition: opacity .3s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--navy-mid);
-    border: 1px solid rgba(11,158,153,0.4);
-    border-radius: 16px; padding: 44px;
-    max-width: 520px; width: 100%;
-    transform: translateY(30px); transition: transform .3s;
-    position: relative; max-height: 90vh; overflow-y: auto;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-close {
-    position: absolute; top: 16px; right: 20px;
-    background: none; border: none; color: var(--gray);
-    font-size: 24px; cursor: pointer; transition: color .2s;
-  }
-  .modal-close:hover { color: var(--white); }
-  .modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; margin-bottom: 6px; }
-  .modal-tour-name { color: var(--teal-light); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
-  .modal-summary {
-    background: rgba(11,158,153,0.08); border: 1px solid rgba(11,158,153,0.2);
-    border-radius: 10px; padding: 16px; margin-bottom: 24px;
-  }
-  .modal-summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
-  .modal-summary-row:last-child { border-bottom: none; font-weight: 700; }
-  .modal-summary-row span:first-child { color: var(--gray); }
-  .deposit-box {
-    background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.3);
-    border-radius: 10px; padding: 16px; margin-bottom: 24px; text-align: center;
-  }
-  .deposit-box p { font-size: 13px; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
-  .deposit-box .dep-amount { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--gold); }
-  .deposit-box small { color: var(--gray); font-size: 12px; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; }
-  .form-group input, .form-group select {
-    width: 100%; background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
-    padding: 12px 16px; color: var(--white); font-family: 'Barlow', sans-serif; font-size: 15px;
-    transition: border-color .2s; outline: none;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--teal); }
-  .form-group select option { background: var(--navy-mid); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .stripe-placeholder {
-    background: rgba(255,255,255,0.04); border: 1px dashed rgba(11,158,153,0.4);
-    border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px;
-  }
-  .stripe-placeholder p { color: var(--gray); font-size: 13px; }
-  .stripe-placeholder strong { color: var(--teal-light); }
-  .submit-btn {
-    width: 100%; background: linear-gradient(135deg, var(--teal-dark), var(--teal));
-    color: var(--white); border: none; border-radius: 8px;
-    padding: 16px; font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 16px;
-    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .2s;
-  }
-  .submit-btn:hover { background: linear-gradient(135deg, var(--teal), var(--teal-light)); }
-  .secure-note { text-align: center; margin-top: 12px; font-size: 12px; color: var(--gray); display: flex; align-items: center; justify-content: center; gap: 6px; }
-
-  /* ── FOOTER ── */
-  footer {
-    background: #040e16; border-top: 1px solid rgba(11,158,153,0.15);
-    padding: 48px 24px 28px; text-align: center;
-  }
-  footer .f-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--white); margin-bottom: 12px; }
-  footer .f-logo span { color: var(--gold); }
-  footer p { color: var(--gray); font-size: 13px; }
-  footer .f-links { display: flex; justify-content: center; gap: 24px; margin: 16px 0; }
-  footer .f-links a { color: var(--gray); text-decoration: none; font-size: 13px; transition: color .2s; }
-  footer .f-links a:hover { color: var(--teal-light); }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    nav { padding: 12px 16px; }
-    .nav-links { display: none; }
-    .tour-card, .tour-card.reverse { grid-template-columns: 1fr; direction: ltr; }
-    .tour-img { min-height: 260px; }
-    .tour-img-overlay { background: linear-gradient(to bottom, transparent 40%, var(--navy-mid) 100%) !important; }
-    .tour-body, .tour-card.reverse .tour-body { padding: 28px 24px; }
-    .price-grid.active { grid-template-columns: 1fr 1fr; }
-    .how-steps { grid-template-columns: 1fr; }
-    .modal { padding: 28px 20px; }
-    .form-row { grid-template-columns: 1fr; }
-  }
+:root{--teal:#0b9e99;--teal-dark:#076b68;--teal-light:#14c6bf;--gold:#f5c842;--navy:#071a26;--navy-mid:#0d2d3f;--white:#fff;--off-white:#f0f8f7;--gray:#8ab2b0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(7,26,38,0.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(11,158,153,0.25)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white)}
+.nav-logo .sep{color:var(--teal)}.nav-logo .kaz{color:var(--gold)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--gray);text-decoration:none;font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--teal-light)}
+.nav-cta{background:var(--teal);color:var(--white);border:none;border-radius:4px;padding:10px 22px;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;text-decoration:none}
+.nav-cta:hover{background:var(--teal-light)}
+.hero{min-height:100vh;background:linear-gradient(135deg,#051218 0%,#0d2d3f 45%,#0b3d38 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 40%,rgba(11,158,153,0.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(245,200,66,0.07) 0%,transparent 50%);pointer-events:none}
+.hero-tag{display:inline-block;border:1px solid var(--teal);color:var(--teal-light);padding:5px 18px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;animation:fadeUp .6s ease both}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,9vw,110px);line-height:1;letter-spacing:3px;animation:fadeUp .7s .1s ease both}
+.hero h1 span{color:var(--gold)}
+.hero p{font-size:clamp(15px,2vw,20px);color:var(--gray);max-width:580px;margin:18px auto 36px;line-height:1.65;animation:fadeUp .7s .2s ease both}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+.btn-primary{background:var(--teal);color:var(--white);padding:15px 32px;border-radius:5px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:2px solid var(--teal);white-space:nowrap}
+.btn-primary:hover{background:var(--teal-light);border-color:var(--teal-light);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--white);padding:15px 32px;border-radius:5px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:all .2s;border:2px solid rgba(255,255,255,0.3);white-space:nowrap}
+.btn-outline:hover{border-color:var(--teal-light);color:var(--teal-light);transform:translateY(-2px)}
+.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:var(--gray);font-size:11px;letter-spacing:2px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-hint::after{content:'';width:1px;height:36px;background:var(--teal);animation:pulse 1.6s infinite}
+.section-label{text-align:center;padding:72px 24px 0}
+.section-label .tag{display:inline-block;background:rgba(11,158,153,0.12);border:1px solid var(--teal);color:var(--teal-light);padding:4px 16px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.section-label h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,6vw,68px);letter-spacing:2px;line-height:1}
+.section-label h2 span{color:var(--teal-light)}
+.section-label p{color:var(--gray);font-size:16px;margin-top:10px;max-width:520px;margin-inline:auto}
+.tours{padding:52px 24px 90px;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+.tour-card{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.2);border-radius:16px;overflow:hidden;transition:border-color .3s}
+.tour-card:hover{border-color:rgba(11,158,153,0.5)}
+.tour-img{position:relative;width:100%;height:340px;overflow:hidden}
+.tour-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .5s ease}
+.tour-card:hover .tour-img img{transform:scale(1.04)}
+.tour-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 45%,var(--navy-mid) 100%)}
+.tour-badge{position:absolute;top:18px;left:18px;background:var(--teal);color:var(--white);padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.tour-pickup{position:absolute;bottom:18px;right:18px;background:rgba(7,26,38,0.88);border:1px solid var(--teal);color:var(--teal-light);padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700}
+.tour-body{padding:32px 36px 36px}
+.tour-subtitle{color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.tour-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);line-height:1;letter-spacing:2px;color:var(--white);margin-bottom:14px}
+.tour-desc{color:var(--gray);font-size:14px;line-height:1.7;margin-bottom:20px}
+.tour-features{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:20px}
+.feat{display:flex;align-items:center;gap:8px;background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.22);border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--off-white)}
+.alert-warning{background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.25);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--gold);line-height:1.6}
+details summary{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-light);cursor:pointer;list-style:none;margin-bottom:16px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+.itinerary-content{font-size:12px;color:var(--gray);line-height:2.1;border-left:2px solid var(--teal);padding-left:14px;margin-bottom:16px;margin-top:8px}
+.itinerary-content div strong{color:var(--white)}
+.pricing-block{margin-bottom:24px}
+.pricing-tabs{display:flex;border-radius:8px;overflow:hidden;border:1px solid rgba(11,158,153,0.3);margin-bottom:14px;width:fit-content}
+.ptab{padding:9px 22px;background:transparent;border:none;color:var(--gray);font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.ptab.active{background:var(--teal);color:var(--white)}
+.ptab:not(.active):hover{background:rgba(11,158,153,0.15);color:var(--white)}
+.price-grid{display:none}
+.price-grid.active{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.price-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px}
+.price-item .who{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.price-item .amount{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--white);line-height:1}
+.price-item .amount span{font-size:15px;color:var(--gray)}
+.price-item .equiv{font-size:12px;color:var(--teal-light);font-weight:600;margin-top:3px}
+.price-note{font-size:12px;color:var(--gold);font-weight:600;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);border-radius:6px;padding:9px 13px;margin-top:12px}
+.age-note{font-size:11px;color:var(--gray);margin-top:7px}
+.book-btn{display:block;width:100%;background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:var(--white);border:none;border-radius:8px;padding:16px;font-family:'Barlow',sans-serif;font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center;margin-top:8px}
+.book-btn:hover{background:linear-gradient(135deg,var(--teal),var(--teal-light));transform:translateY(-2px);box-shadow:0 8px 24px rgba(11,158,153,0.4)}
+.how{background:rgba(11,158,153,0.05);border-top:1px solid rgba(11,158,153,0.15);border-bottom:1px solid rgba(11,158,153,0.15);padding:72px 24px}
+.how-inner{max-width:860px;margin:0 auto;text-align:center}
+.how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px}
+.step{display:flex;flex-direction:column;align-items:center;gap:12px}
+.step-num{width:52px;height:52px;border-radius:50%;background:var(--teal);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step h4{font-size:15px;font-weight:700}
+.step p{color:var(--gray);font-size:13px;line-height:1.6}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(5,15,22,0.93);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.4);border-radius:16px;padding:36px;max-width:500px;width:100%;transform:translateY(28px);transition:transform .3s;position:relative;max-height:92vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--gray);font-size:26px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--white)}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:4px}
+.modal-tour-label{color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.modal-summary{background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:14px;margin-bottom:20px}
+.ms-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px}
+.ms-row:last-child{border-bottom:none;font-weight:700}
+.ms-row span:first-child{color:var(--gray)}
+.deposit-box{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:16px;margin-bottom:20px;text-align:center}
+.deposit-box p{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:4px}
+.dep-amount{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--gold);line-height:1}
+.dep-detail{color:var(--gray);font-size:11px;margin-top:4px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;transition:border-color .2s;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal)}
+.form-group select option{background:var(--navy-mid)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stripe-box{background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:18px;text-align:center;margin-bottom:14px}
+.stripe-box p{color:var(--gray);font-size:13px}
+.stripe-box strong{color:var(--teal-light)}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:var(--white);border:none;border-radius:8px;padding:15px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.submit-btn:hover{background:linear-gradient(135deg,var(--teal),var(--teal-light))}
+.secure-note{text-align:center;margin-top:10px;font-size:11px;color:var(--gray)}
+footer{background:#040e16;border-top:1px solid rgba(11,158,153,0.15);padding:44px 24px 24px;text-align:center}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--white);margin-bottom:10px}
+.f-logo span{color:var(--gold)}
+.f-links{display:flex;justify-content:center;gap:20px;margin:14px 0;flex-wrap:wrap}
+.f-links a{color:var(--gray);text-decoration:none;font-size:13px;transition:color .2s}
+.f-links a:hover{color:var(--teal-light)}
+footer p{color:var(--gray);font-size:12px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:768px){
+  nav{padding:12px 16px}.nav-links{display:none}
+  .tour-img{height:220px}.tour-body{padding:22px 20px 26px}
+  .tour-features{grid-template-columns:1fr 1fr}
+  .how-steps{grid-template-columns:1fr}
+  .modal{padding:24px 18px}.form-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    <span>NEXORA <span class="sep">|</span> <span class="kaz">KAZZAN</span></span>
-  </div>
+  <div class="nav-logo">NEXORA <span class="sep">|</span> <span class="kaz">KAZZAN</span></div>
   <ul class="nav-links">
     <li><a href="#tours">Tours</a></li>
     <li><a href="#how">How it works</a></li>
@@ -380,11 +138,10 @@
   <a href="#tours" class="nav-cta">Book Now</a>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-tag">✦ Cancún & Riviera Maya</div>
   <h1>Unforgettable<br><span>Tours</span></h1>
-  <p>Book your spot today, pay on board. Explore paradise with Nexora | Kazzan.</p>
+  <p>Book your spot today, pay on board. Experience paradise with Nexora | Kazzan.</p>
   <div class="hero-btns">
     <a href="#tours" class="btn-primary">See All Tours</a>
     <a href="#how" class="btn-outline">How It Works</a>
@@ -392,205 +149,153 @@
   <div class="scroll-hint">Scroll</div>
 </section>
 
-<!-- SECTION HEADER -->
 <div class="section-label" id="tours">
   <div class="tag">✦ Our Experiences</div>
   <h2>Choose Your <span>Adventure</span></h2>
   <p>Three iconic destinations. One easy booking. Reserve now & pay on board.</p>
 </div>
 
-<!-- TOURS -->
 <div class="tours">
 
   <!-- ISLA MUJERES -->
-  <div class="tour-card" id="card-isla">
+  <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1559494007-9f5847c49d94?w=800&q=80" alt="Isla Mujeres Catamaran">
+      <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=85" alt="Catamaran Isla Mujeres Cancun">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">By Catamaran</div>
       <div class="tour-pickup">⏰ Pick-up: 8:30 AM</div>
     </div>
     <div class="tour-body">
-      <div>
-        <div class="tour-subtitle">Tour to</div>
-        <div class="tour-name">Isla<br>Mujeres</div>
-        <p class="tour-desc">Depart from Marina Punta Sam aboard a catamaran. Snorkel at El Meco Reef, enjoy an open bar on board, a buffet lunch at our private beach club, free time downtown, a guided visit to Playa Norte, and a tequila party on the way back!</p>
-        <div class="tour-features">
-          <div class="feat"><span class="feat-icon">🚌</span> Round-trip transport</div>
-          <div class="feat"><span class="feat-icon">🥐</span> Light breakfast included</div>
-          <div class="feat"><span class="feat-icon">🤿</span> Snorkel at El Meco Reef</div>
-          <div class="feat"><span class="feat-icon">🍽️</span> Beach club buffet</div>
-          <div class="feat"><span class="feat-icon">🍹</span> Open bar on board</div>
-          <div class="feat"><span class="feat-icon">🏝️</span> Guided visit to Playa Norte</div>
-          <div class="feat"><span class="feat-icon">🎉</span> Tequila party on return</div>
-          <div class="feat"><span class="feat-icon">👨‍✈️</span> Bilingual crew</div>
+      <div class="tour-subtitle">Tour to</div>
+      <div class="tour-name">Isla Mujeres</div>
+      <p class="tour-desc">Depart from Marina Punta Sam aboard a catamaran. Snorkel at El Meco Reef, enjoy an open bar on board, a buffet lunch at our private beach club, free time downtown, a guided visit to Playa Norte, and a tequila party on the way back.</p>
+      <div class="tour-features">
+        <div class="feat">🚌 Round-trip transport</div>
+        <div class="feat">🥐 Light breakfast</div>
+        <div class="feat">🤿 Snorkel El Meco Reef</div>
+        <div class="feat">🍽️ Beach club buffet</div>
+        <div class="feat">🍹 Open bar on board</div>
+        <div class="feat">🏝️ Guided visit Playa Norte</div>
+        <div class="feat">🎉 Tequila party on return</div>
+        <div class="feat">👨‍✈️ Bilingual crew</div>
+      </div>
+      <div class="alert-warning">
+        ⚠️ <strong>Not included:</strong> Federal dock & marine park tax — <strong>$20 USD / $380 MXN</strong> (Mexican nationals with ID: $330 MXN). Paid in cash at the marina.
+      </div>
+      <details>
+        <summary>▸ View day itinerary</summary>
+        <div class="itinerary-content">
+          <div><strong>9:15 am</strong> — Check-in at Marina Punta Sam</div>
+          <div><strong>9:25 am</strong> — Light breakfast (coffee, juice & bread)</div>
+          <div><strong>10:00 am</strong> — Departure to Isla Mujeres</div>
+          <div><strong>10:15 am</strong> — Snorkel at El Meco Reef (~40 min)</div>
+          <div><strong>11:15 am</strong> — Sailing along the island shore & canals</div>
+          <div><strong>12:00 pm</strong> — Arrival at private beach club</div>
+          <div><strong>12:30 pm</strong> — Buffet lunch & beach time</div>
+          <div><strong>2:00 pm</strong> — Free time + guided visit to Playa Norte</div>
+          <div><strong>5:00 pm</strong> — Board · Tequila party on the way back</div>
+          <div><strong>5:30 pm</strong> — Arrival at Cancún marina</div>
         </div>
-        <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.25);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--gold);">
-          ⚠️ <strong>Not included:</strong> Federal dock & marine park tax — <strong>$20 USD / $380 MXN</strong> (Mexican nationals with ID: $330 MXN). Paid in cash at the marina.
+      </details>
+      <div class="pricing-block">
+        <div class="pricing-tabs">
+          <button class="ptab active" onclick="switchTab(this,'isla-int')">International</button>
+          <button class="ptab" onclick="switchTab(this,'isla-mex')">Mexican</button>
         </div>
-        <details style="margin-bottom:20px;cursor:pointer;">
-          <summary style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-light);list-style:none;">▸ View day itinerary</summary>
-          <div style="margin-top:12px;font-size:12px;color:var(--gray);line-height:2;border-left:2px solid var(--teal);padding-left:14px;">
-            <div><strong style="color:var(--white)">9:15 am</strong> — Check-in at Marina Punta Sam</div>
-            <div><strong style="color:var(--white)">9:25 am</strong> — Light breakfast (coffee, juice & bread)</div>
-            <div><strong style="color:var(--white)">10:00 am</strong> — Departure to Isla Mujeres</div>
-            <div><strong style="color:var(--white)">10:15 am</strong> — Snorkel stop at El Meco Reef (~40 min)</div>
-            <div><strong style="color:var(--white)">11:15 am</strong> — Sailing along the island shore, port & canals</div>
-            <div><strong style="color:var(--white)">12:00 pm</strong> — Arrival at private beach club</div>
-            <div><strong style="color:var(--white)">12:30 pm</strong> — Buffet lunch & beach time</div>
-            <div><strong style="color:var(--white)">2:00 pm</strong> — Free time downtown + guided visit to Playa Norte</div>
-            <div><strong style="color:var(--white)">5:00 pm</strong> — Board · Tequila party on the way back</div>
-            <div><strong style="color:var(--white)">5:30 pm</strong> — Arrival at Cancún marina</div>
-          </div>
-        </details>
-        <div class="pricing-block">
-          <div class="pricing-tabs">
-            <button class="ptab active" onclick="switchTab(this,'isla-int')">International</button>
-            <button class="ptab" onclick="switchTab(this,'isla-mex')">Mexican</button>
-          </div>
-          <div class="price-grid active" id="isla-int">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$1,010 <span>MXN</span></div>
-              <div class="mxn">≈ USD $54.59</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$950 <span>MXN</span></div>
-              <div class="mxn">≈ USD $51.35</div>
-            </div>
-          </div>
-          <div class="price-grid" id="isla-mex">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$1,010 <span>MXN</span></div>
-              <div class="mxn">≈ USD $54.59</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$950 <span>MXN</span></div>
-              <div class="mxn">≈ USD $51.35</div>
-            </div>
-          </div>
-          <div class="price-note">⚡ Reserve with only $9 USD / $150 MXN — Pay the rest on board!</div>
-          <div class="age-note">* Children 12+ are charged adult price</div>
+        <div class="price-grid active" id="isla-int">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$1,010 <span>MXN</span></div><div class="equiv">≈ USD $54.59</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$950 <span>MXN</span></div><div class="equiv">≈ USD $51.35</div></div>
         </div>
+        <div class="price-grid" id="isla-mex">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$1,010 <span>MXN</span></div><div class="equiv">≈ USD $54.59</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$950 <span>MXN</span></div><div class="equiv">≈ USD $51.35</div></div>
+        </div>
+        <div class="price-note">⚡ Reserve with only <strong>$18 USD / $300 MXN per person</strong> — Pay the rest on board!</div>
+        <div class="age-note">* Children 12+ are charged adult price</div>
       </div>
       <button class="book-btn" onclick="openModal('Isla Mujeres by Catamaran','isla')">Reserve My Spot →</button>
     </div>
   </div>
 
   <!-- XCARET -->
-  <div class="tour-card reverse" id="card-xcaret">
+  <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1682687220945-922198770e60?w=800&q=80" alt="Xcaret Park">
+      <img src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1200&q=85" alt="Xcaret Park Mexico">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">Xcaret Plus</div>
       <div class="tour-pickup">⏰ Pick-up: 7:15 AM</div>
     </div>
     <div class="tour-body">
-      <div>
-        <div class="tour-subtitle">Tour to</div>
-        <div class="tour-name">Xcaret<br>Plus</div>
-        <p class="tour-desc">Mexico's Majestic Paradise. Swim through underground rivers, discover the coral reef aquarium, watch the spectacular México Espectacular show, and explore over 50 activities in one incredible day.</p>
-        <div class="tour-features">
-          <div class="feat"><span class="feat-icon">🌊</span> Underground rivers</div>
-          <div class="feat"><span class="feat-icon">🦋</span> Butterfly Pavilion</div>
-          <div class="feat"><span class="feat-icon">🎭</span> Cultural night show</div>
-          <div class="feat"><span class="feat-icon">🍽️</span> Buffet lunch + drinks</div>
-          <div class="feat"><span class="feat-icon">🐆</span> Wildlife & aviary</div>
-          <div class="feat"><span class="feat-icon">🚌</span> Round-trip transport</div>
+      <div class="tour-subtitle">Tour to</div>
+      <div class="tour-name">Xcaret Plus</div>
+      <p class="tour-desc">Mexico's Majestic Paradise. Swim through underground rivers, explore the coral reef aquarium, the Butterfly Pavilion and the Aviary, then witness the México Espectacular show with over 300 artists. Over 50 activities all in one incredible day.</p>
+      <div class="tour-features">
+        <div class="feat">🌊 Underground rivers</div>
+        <div class="feat">🦋 Butterfly Pavilion</div>
+        <div class="feat">🎭 México Espectacular show</div>
+        <div class="feat">🍽️ Buffet + beer + soft drinks</div>
+        <div class="feat">🐆 Aviary & wildlife</div>
+        <div class="feat">🐢 Sea turtle exhibition</div>
+        <div class="feat">🏖️ Beaches & coves</div>
+        <div class="feat">🚌 Round-trip transport</div>
+      </div>
+      <div class="pricing-block">
+        <div class="pricing-tabs">
+          <button class="ptab active" onclick="switchTab(this,'xc-int')">International</button>
+          <button class="ptab" onclick="switchTab(this,'xc-mex')">Mexican</button>
         </div>
-        <div class="pricing-block">
-          <div class="pricing-tabs">
-            <button class="ptab active" onclick="switchTab(this,'xc-int')">International</button>
-            <button class="ptab" onclick="switchTab(this,'xc-mex')">Mexican</button>
-          </div>
-          <div class="price-grid active" id="xc-int">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$179 <span>USD</span></div>
-              <div class="mxn">≈ MXN $3,312</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$137 <span>USD</span></div>
-              <div class="mxn">≈ MXN $2,535</div>
-            </div>
-          </div>
-          <div class="price-grid" id="xc-mex">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$162 <span>USD</span></div>
-              <div class="mxn">≈ MXN $2,997</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$126 <span>USD</span></div>
-              <div class="mxn">≈ MXN $2,331</div>
-            </div>
-          </div>
-          <div class="price-note">⚡ Reserve with only $9 USD / $150 MXN — Pay the rest on board!</div>
-          <div class="age-note">* Children 12+ are charged adult price | Exchange rate: $18.50 MXN/USD</div>
+        <div class="price-grid active" id="xc-int">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$179 <span>USD</span></div><div class="equiv">≈ MXN $3,312</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$137 <span>USD</span></div><div class="equiv">≈ MXN $2,535</div></div>
         </div>
+        <div class="price-grid" id="xc-mex">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$162 <span>USD</span></div><div class="equiv">≈ MXN $2,997</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$126 <span>USD</span></div><div class="equiv">≈ MXN $2,331</div></div>
+        </div>
+        <div class="price-note">⚡ Reserve with only <strong>$18 USD / $300 MXN per person</strong> — Pay the rest on board!</div>
+        <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xcaret Plus','xcaret')">Reserve My Spot →</button>
     </div>
   </div>
 
   <!-- XEL-HA -->
-  <div class="tour-card" id="card-xelha">
+  <div class="tour-card">
     <div class="tour-img">
-      <img src="https://images.unsplash.com/photo-1559827291-72ee739d0d9a?w=800&q=80" alt="Xel-Ha Natural Park">
+      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85" alt="Xel-Ha Natural Park Riviera Maya">
       <div class="tour-img-overlay"></div>
       <div class="tour-badge">Natural Park</div>
       <div class="tour-pickup">⏰ Pick-up: 7:15 AM</div>
     </div>
     <div class="tour-body">
-      <div>
-        <div class="tour-subtitle">Tour to</div>
-        <div class="tour-name">Xel-Há</div>
-        <p class="tour-desc">Nature, adventure & fun all in one place. Snorkel in crystal-clear inlets, ride zip-lines into the water, explore cenotes, bike through jungle paths, and enjoy an all-inclusive buffet in the Riviera Maya.</p>
-        <div class="tour-features">
-          <div class="feat"><span class="feat-icon">🤿</span> Snorkel in calm inlets</div>
-          <div class="feat"><span class="feat-icon">🚡</span> Water zip-lines</div>
-          <div class="feat"><span class="feat-icon">🌿</span> Jungle bike trails</div>
-          <div class="feat"><span class="feat-icon">🍽️</span> Buffet + open bar</div>
-          <div class="feat"><span class="feat-icon">💧</span> Cenotes & caves</div>
-          <div class="feat"><span class="feat-icon">🚌</span> Round-trip transport</div>
+      <div class="tour-subtitle">Tour to</div>
+      <div class="tour-name">Xel-Há</div>
+      <p class="tour-desc">Nature, adventure & fun all-inclusive in the Riviera Maya. Snorkel among 90+ tropical fish species in crystal-clear inlets, ride water zip-lines, explore cenotes and mangroves, bike through jungle trails, and enjoy an unlimited buffet with open bar all day long.</p>
+      <div class="tour-features">
+        <div class="feat">🤿 Snorkel in calm inlets</div>
+        <div class="feat">🚡 Water zip-lines</div>
+        <div class="feat">🌿 Jungle bike trails</div>
+        <div class="feat">🍽️ Buffet + open bar</div>
+        <div class="feat">💧 Cenotes & caves</div>
+        <div class="feat">🏄 Panoramic waterslide</div>
+        <div class="feat">🦈 Stingray encounter</div>
+        <div class="feat">🚌 Round-trip transport</div>
+      </div>
+      <div class="pricing-block">
+        <div class="pricing-tabs">
+          <button class="ptab active" onclick="switchTab(this,'xh-int')">International</button>
+          <button class="ptab" onclick="switchTab(this,'xh-mex')">Mexican</button>
         </div>
-        <div class="pricing-block">
-          <div class="pricing-tabs">
-            <button class="ptab active" onclick="switchTab(this,'xh-int')">International</button>
-            <button class="ptab" onclick="switchTab(this,'xh-mex')">Mexican</button>
-          </div>
-          <div class="price-grid active" id="xh-int">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$126 <span>USD</span></div>
-              <div class="mxn">≈ MXN $2,331</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$98 <span>USD</span></div>
-              <div class="mxn">≈ MXN $1,813</div>
-            </div>
-          </div>
-          <div class="price-grid" id="xh-mex">
-            <div class="price-item">
-              <div class="who">Adult</div>
-              <div class="usd">$115 <span>USD</span></div>
-              <div class="mxn">≈ MXN $2,128</div>
-            </div>
-            <div class="price-item">
-              <div class="who">Child (up to 11 yrs)</div>
-              <div class="usd">$91 <span>USD</span></div>
-              <div class="mxn">≈ MXN $1,684</div>
-            </div>
-          </div>
-          <div class="price-note">⚡ Reserve with only $9 USD / $150 MXN — Pay the rest on board!</div>
-          <div class="age-note">* Children 12+ are charged adult price | Exchange rate: $18.50 MXN/USD</div>
+        <div class="price-grid active" id="xh-int">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$126 <span>USD</span></div><div class="equiv">≈ MXN $2,331</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$98 <span>USD</span></div><div class="equiv">≈ MXN $1,813</div></div>
         </div>
+        <div class="price-grid" id="xh-mex">
+          <div class="price-item"><div class="who">Adult</div><div class="amount">$115 <span>USD</span></div><div class="equiv">≈ MXN $2,128</div></div>
+          <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$91 <span>USD</span></div><div class="equiv">≈ MXN $1,684</div></div>
+        </div>
+        <div class="price-note">⚡ Reserve with only <strong>$18 USD / $300 MXN per person</strong> — Pay the rest on board!</div>
+        <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xel-Há Natural Park','xelha')">Reserve My Spot →</button>
     </div>
@@ -598,7 +303,6 @@
 
 </div>
 
-<!-- HOW IT WORKS -->
 <section class="how" id="how">
   <div class="how-inner">
     <div class="section-label" style="padding:0">
@@ -607,26 +311,13 @@
       <p>Book in 60 seconds. Pay when you board.</p>
     </div>
     <div class="how-steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h4>Choose Your Tour</h4>
-        <p>Pick from Isla Mujeres, Xcaret Plus, or Xel-Há. Select your date and number of guests.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h4>Pay the Deposit</h4>
-        <p>Secure your spot with just $9 USD / $150 MXN. Fast, safe, and easy checkout.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h4>Enjoy & Pay the Rest</h4>
-        <p>We pick you up at your hotel. Pay the remaining balance on board and enjoy paradise!</p>
-      </div>
+      <div class="step"><div class="step-num">1</div><h4>Choose Your Tour</h4><p>Pick from Isla Mujeres, Xcaret Plus, or Xel-Há. Select your date and number of guests.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with just $18 USD / $300 MXN per person. Fast, safe card payment.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Enjoy & Pay the Rest</h4><p>We pick you up at your hotel. Pay the balance on board and enjoy paradise!</p></div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="f-logo">NEXORA <span>|</span> KAZZAN</div>
   <div class="f-links">
@@ -638,135 +329,91 @@
   <p>© 2026 Nexora | Kazzan. All rights reserved. Cancún, Quintana Roo, México.</p>
 </footer>
 
-<!-- BOOKING MODAL -->
 <div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <h3>Reserve Your Spot</h3>
-    <div class="modal-tour-name" id="modal-tour-name">Tour Name</div>
-
-    <div class="modal-summary" id="modal-summary">
-      <div class="modal-summary-row"><span>Tour</span><span id="ms-tour">—</span></div>
-      <div class="modal-summary-row"><span>Guests</span><span id="ms-guests">—</span></div>
-      <div class="modal-summary-row"><span>Today's deposit</span><span style="color:var(--gold)" id="ms-deposit">$9 USD</span></div>
+    <div class="modal-tour-label" id="modal-tour-name">—</div>
+    <div class="modal-summary">
+      <div class="ms-row"><span>Tour</span><span id="ms-tour">—</span></div>
+      <div class="ms-row"><span>Guests</span><span id="ms-guests">—</span></div>
+      <div class="ms-row"><span>Deposit today</span><span style="color:var(--gold)" id="ms-deposit">$18 USD</span></div>
     </div>
-
     <div class="deposit-box">
       <p>Amount due today</p>
-      <div class="dep-amount">$9 USD</div>
-      <small>= $150 MXN • Rest paid on board</small>
+      <div class="dep-amount" id="dep-total">$18 USD</div>
+      <div class="dep-detail" id="dep-detail">1 person × $18 USD · Rest paid on board</div>
     </div>
-
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" placeholder="Your full name" id="f-name">
-    </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" placeholder="you@email.com" id="f-email">
-    </div>
+    <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name" id="f-name"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com" id="f-email"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label>Adults</label>
-        <select id="f-adults" onchange="updateSummary()">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Children (≤11 yrs)</label>
-        <select id="f-children" onchange="updateSummary()">
-          <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
-        </select>
-      </div>
+      <div class="form-group"><label>Adults</label><select id="f-adults" onchange="updateSummary()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+      <div class="form-group"><label>Children (≤11 yrs)</label><select id="f-children" onchange="updateSummary()"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
     </div>
-    <div class="form-group">
-      <label>Tour Date</label>
-      <input type="date" id="f-date">
-    </div>
-    <div class="form-group">
-      <label>Hotel / Pickup Address</label>
-      <input type="text" placeholder="Hotel name or address" id="f-hotel">
-    </div>
-
-    <div class="stripe-placeholder">
+    <div class="form-group"><label>Tour Date</label><input type="date" id="f-date"></div>
+    <div class="form-group"><label>Hotel / Pickup Address</label><input type="text" placeholder="Hotel name or address" id="f-hotel"></div>
+    <div class="stripe-box">
       <p>💳 <strong>Secure Payment via Stripe</strong></p>
-      <p style="margin-top:6px; font-size:12px">Connect your Stripe account to activate payments.<br>Card fields will appear here.</p>
+      <p style="margin-top:6px;font-size:12px">Card fields will appear here once Stripe is connected.</p>
     </div>
-
-    <button class="submit-btn" onclick="submitBooking()">Pay $9 USD & Secure My Spot</button>
-    <div class="secure-note">🔒 Secure checkout · No hidden fees · Easy cancellation</div>
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pay $18 USD & Secure My Spot</button>
+    <div class="secure-note">🔒 Secure checkout · No hidden fees · Flexible cancellation</div>
   </div>
 </div>
 
 <script>
-  let currentTour = '';
-
-  function switchTab(btn, gridId) {
-    const tabs = btn.parentElement.querySelectorAll('.ptab');
-    const grids = btn.parentElement.nextElementSibling;
-    tabs.forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    // find sibling grids
-    const card = btn.closest('.pricing-block');
-    card.querySelectorAll('.price-grid').forEach(g => g.classList.remove('active'));
-    document.getElementById(gridId).classList.add('active');
-  }
-
-  function openModal(tourName, tourKey) {
-    currentTour = tourKey;
-    document.getElementById('modal-tour-name').textContent = tourName;
-    document.getElementById('ms-tour').textContent = tourName;
-    updateSummary();
-    // Set min date to tomorrow
-    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
-    document.getElementById('f-date').min = tomorrow.toISOString().split('T')[0];
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function handleOverlayClick(e) {
-    if (e.target === e.currentTarget) closeModal();
-  }
-
-  function updateSummary() {
-    const adults = parseInt(document.getElementById('f-adults').value)||1;
-    const kids = parseInt(document.getElementById('f-children').value)||0;
-    const total = adults + kids;
-    document.getElementById('ms-guests').textContent = adults + ' adult(s)' + (kids > 0 ? ', ' + kids + ' child(ren)' : '');
-    document.getElementById('ms-deposit').textContent = '$9 USD';
-  }
-
-  function submitBooking() {
-    const name = document.getElementById('f-name').value.trim();
-    const email = document.getElementById('f-email').value.trim();
-    const date = document.getElementById('f-date').value;
-    const hotel = document.getElementById('f-hotel').value.trim();
-
-    if (!name || !email || !date || !hotel) {
-      alert('Please fill in all fields before proceeding.');
-      return;
-    }
-    // Stripe integration point
-    alert('🎉 Booking received!\nWe\'ll contact you at ' + email + ' to confirm your reservation.\n\n(Stripe payment integration to be connected)');
-    closeModal();
-  }
-
-  // Intersection observer for fade-in
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity=1; e.target.style.transform='translateY(0)'; } });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.tour-card, .step').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(32px)';
-    el.style.transition = 'opacity .6s ease, transform .6s ease';
-    observer.observe(el);
-  });
+let currentTour='';
+function switchTab(btn,gridId){
+  const block=btn.closest('.pricing-block');
+  block.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  block.querySelectorAll('.price-grid').forEach(g=>g.classList.remove('active'));
+  document.getElementById(gridId).classList.add('active');
+}
+function openModal(tourName,tourKey){
+  currentTour=tourKey;
+  document.getElementById('modal-tour-name').textContent=tourName;
+  document.getElementById('ms-tour').textContent=tourName;
+  updateSummary();
+  const t=new Date();t.setDate(t.getDate()+1);
+  document.getElementById('f-date').min=t.toISOString().split('T')[0];
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleOverlayClick(e){if(e.target===e.currentTarget)closeModal()}
+function updateSummary(){
+  const adults=parseInt(document.getElementById('f-adults').value)||1;
+  const kids=parseInt(document.getElementById('f-children').value)||0;
+  const total=adults+kids;
+  const depUSD=total*18;
+  const depMXN=total*300;
+  document.getElementById('ms-guests').textContent=adults+' adult(s)'+(kids>0?', '+kids+' child(ren)':'');
+  document.getElementById('ms-deposit').textContent='$'+depUSD+' USD';
+  document.getElementById('dep-total').textContent='$'+depUSD+' USD';
+  document.getElementById('dep-detail').textContent=total+' person(s) × $18 USD (≈ $'+depMXN+' MXN) · Rest paid on board';
+  document.getElementById('submit-btn').textContent='Pay $'+depUSD+' USD & Secure My Spot';
+}
+function submitBooking(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const date=document.getElementById('f-date').value;
+  const hotel=document.getElementById('f-hotel').value.trim();
+  if(!name||!email||!date||!hotel){alert('Please fill in all fields before continuing.');return}
+  alert('🎉 Booking received!\nWe will contact you at '+email+' to confirm.\n\n(Stripe integration pending)');
+  closeModal();
+}
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}});
+},{threshold:0.08});
+document.querySelectorAll('.tour-card,.step').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(28px)';
+  el.style.transition='opacity .6s ease, transform .6s ease';
+  obs.observe(el);
+});
 </script>
 </body>
 </html>
