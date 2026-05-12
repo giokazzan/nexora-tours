@@ -226,7 +226,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adulto</div><div class="amount">$1,010 <span>MXN</span></div><div class="equiv">≈ USD $54.59</div></div>
           <div class="price-item"><div class="who">Menor (hasta 11 años)</div><div class="amount">$950 <span>MXN</span></div><div class="equiv">≈ USD $51.35</div></div>
         </div>
-        <div class="price-note">⚡ Aparta con solo <strong>$300 MXN / $18 USD por persona</strong> — ¡El resto lo pagas al abordar!</div>
+        <div class="price-note">⚡ Aparta con solo <strong>$299 MXN</strong> de depósito (monto fijo por reservación) — ¡El resto lo pagas al abordar!</div>
         <div class="age-note">* A partir de 12 años se cobra precio adulto</div>
       </div>
       <button class="book-btn" onclick="openModal('Isla Mujeres en Catamarán','isla')">Reservar Mi Lugar →</button>
@@ -268,7 +268,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adulto</div><div class="amount">$162 <span>USD</span></div><div class="equiv">≈ MXN $2,997</div></div>
           <div class="price-item"><div class="who">Menor (hasta 11 años)</div><div class="amount">$126 <span>USD</span></div><div class="equiv">≈ MXN $2,331</div></div>
         </div>
-        <div class="price-note">⚡ Aparta con solo <strong>$300 MXN / $18 USD por persona</strong> — ¡El resto lo pagas al abordar!</div>
+        <div class="price-note">⚡ Aparta con solo <strong>$299 MXN</strong> de depósito (monto fijo por reservación) — ¡El resto lo pagas al abordar!</div>
         <div class="age-note">* A partir de 12 años se cobra precio adulto · Tipo de cambio: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xcaret Plus','xcaret')">Reservar Mi Lugar →</button>
@@ -310,7 +310,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adulto</div><div class="amount">$115 <span>USD</span></div><div class="equiv">≈ MXN $2,128</div></div>
           <div class="price-item"><div class="who">Menor (hasta 11 años)</div><div class="amount">$91 <span>USD</span></div><div class="equiv">≈ MXN $1,684</div></div>
         </div>
-        <div class="price-note">⚡ Aparta con solo <strong>$300 MXN / $18 USD por persona</strong> — ¡El resto lo pagas al abordar!</div>
+        <div class="price-note">⚡ Aparta con solo <strong>$299 MXN</strong> de depósito (monto fijo por reservación) — ¡El resto lo pagas al abordar!</div>
         <div class="age-note">* A partir de 12 años se cobra precio adulto · Tipo de cambio: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xel-Há Parque Natural','xelha')">Reservar Mi Lugar →</button>
@@ -328,7 +328,7 @@ footer p{color:var(--gray);font-size:12px}
     </div>
     <div class="how-steps">
       <div class="step"><div class="step-num">1</div><h4>Elige Tu Tour</h4><p>Selecciona entre Isla Mujeres, Xcaret Plus o Xel-Há. Elige tu fecha y número de personas.</p></div>
-      <div class="step"><div class="step-num">2</div><h4>Paga el Depósito</h4><p>Aparta con solo $300 MXN / $18 USD por persona. Pago rápido y seguro con tarjeta.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Paga el Depósito</h4><p>Aparta tu lugar con un depósito fijo de $299 MXN por reservación. Pago rápido y seguro con tarjeta.</p></div>
       <div class="step"><div class="step-num">3</div><h4>Disfruta y Paga el Resto</h4><p>Te recogemos en tu hotel. Pagas el saldo al abordar y ¡a vivir el paraíso!</p></div>
     </div>
   </div>
@@ -354,12 +354,12 @@ footer p{color:var(--gray);font-size:12px}
     <div class="modal-summary">
       <div class="ms-row"><span>Tour</span><span id="ms-tour">—</span></div>
       <div class="ms-row"><span>Personas</span><span id="ms-guests">—</span></div>
-      <div class="ms-row"><span>Depósito hoy</span><span style="color:var(--gold)" id="ms-deposit">$300 MXN</span></div>
+      <div class="ms-row"><span>Depósito hoy</span><span style="color:var(--gold)">$299 MXN</span></div>
     </div>
     <div class="deposit-box">
-      <p>Monto a pagar hoy</p>
-      <div class="dep-amount" id="dep-total">$300 MXN</div>
-      <div class="dep-detail" id="dep-detail">1 persona × $300 MXN · El resto se paga al abordar</div>
+      <p>Monto a pagar hoy (depósito fijo por reservación)</p>
+      <div class="dep-amount">$299 MXN</div>
+      <div class="dep-detail">Depósito único · El resto se paga al abordar</div>
     </div>
     <div class="form-group"><label>Nombre Completo</label><input type="text" placeholder="Tu nombre completo" id="f-name"></div>
     <div class="form-group"><label>Correo Electrónico</label><input type="email" placeholder="tu@correo.com" id="f-email"></div>
@@ -369,65 +369,139 @@ footer p{color:var(--gray);font-size:12px}
     </div>
     <div class="form-group"><label>Fecha del Tour</label><input type="date" id="f-date"></div>
     <div class="form-group"><label>Hotel / Dirección de Pick-up</label><input type="text" placeholder="Nombre del hotel o dirección" id="f-hotel"></div>
-    <div class="stripe-box">
-      <p>💳 <strong>Pago Seguro vía Stripe</strong></p>
-      <p style="margin-top:6px;font-size:12px">Los campos de tarjeta aparecerán aquí una vez conectado Stripe.</p>
+    <div class="form-group">
+      <label>Número de Tarjeta</label>
+      <div id="card-element" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:13px 14px;"></div>
+      <div id="card-errors" style="color:#ff6b6b;font-size:12px;margin-top:6px;"></div>
     </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pagar $300 MXN y Asegurar Mi Lugar</button>
-    <div class="secure-note">🔒 Pago seguro · Sin cargos ocultos · Cancelación flexible</div>
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pagar $299 MXN y Asegurar Mi Lugar</button>
+    <div class="secure-note">🔒 Pago seguro con Stripe · Sin cargos ocultos · Cancelación flexible</div>
   </div>
 </div>
 
+<script src="https://js.stripe.com/v3/"></script>
 <script>
-let currentTour='';
-function switchTab(btn,gridId){
-  const block=btn.closest('.pricing-block');
-  block.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+const stripe = Stripe('pk_live_51TOshV1gHtpjQ4WKSYVrFy2jqX8wBqpwg3UHfYnzpZlpIj611rc5tka53hjmWbawHwZkyejgmXxXYYiF9fpUARMv00Awzag9tr');
+const elements = stripe.elements();
+const cardElement = elements.create('card', {
+  style: {
+    base: { color: '#ffffff', fontFamily: 'Barlow, sans-serif', fontSize: '15px', '::placeholder': { color: '#8ab2b0' } },
+    invalid: { color: '#ff6b6b' }
+  }
+});
+
+let currentTour = '';
+let cardMounted = false;
+
+function switchTab(btn, gridId) {
+  const block = btn.closest('.pricing-block');
+  block.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  block.querySelectorAll('.price-grid').forEach(g=>g.classList.remove('active'));
+  block.querySelectorAll('.price-grid').forEach(g => g.classList.remove('active'));
   document.getElementById(gridId).classList.add('active');
 }
-function openModal(tourName,tourKey){
-  currentTour=tourKey;
-  document.getElementById('modal-tour-name').textContent=tourName;
-  document.getElementById('ms-tour').textContent=tourName;
-  updateSummary();
-  const t=new Date();t.setDate(t.getDate()+1);
-  document.getElementById('f-date').min=t.toISOString().split('T')[0];
+
+function openModal(tourName, tourKey) {
+  currentTour = tourKey;
+  document.getElementById('modal-tour-name').textContent = tourName;
+  document.getElementById('ms-tour').textContent = tourName;
+  document.getElementById('ms-guests').textContent = '—';
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  document.getElementById('f-date').min = t.toISOString().split('T')[0];
   document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
+  if (!cardMounted) {
+    cardElement.mount('#card-element');
+    cardElement.on('change', e => {
+      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+    });
+    cardMounted = true;
+  }
+  updateSummary();
 }
-function closeModal(){
+
+function closeModal() {
   document.getElementById('modal').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
-function handleOverlayClick(e){if(e.target===e.currentTarget)closeModal()}
-function updateSummary(){
-  const adults=parseInt(document.getElementById('f-adults').value)||1;
-  const kids=parseInt(document.getElementById('f-children').value)||0;
-  const total=adults+kids;
-  const depMXN=total*300;
-  const depUSD=total*18;
-  document.getElementById('ms-guests').textContent=adults+' adulto(s)'+(kids>0?', '+kids+' menor(es)':'');
-  document.getElementById('ms-deposit').textContent='$'+depMXN+' MXN';
-  document.getElementById('dep-total').textContent='$'+depMXN+' MXN';
-  document.getElementById('dep-detail').textContent=total+' persona(s) × $300 MXN (≈ $'+depUSD+' USD) · El resto se paga al abordar';
-  document.getElementById('submit-btn').textContent='Pagar $'+depMXN+' MXN y Asegurar Mi Lugar';
+
+function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
+
+function updateSummary() {
+  const adults = parseInt(document.getElementById('f-adults').value) || 1;
+  const kids   = parseInt(document.getElementById('f-children').value) || 0;
+  document.getElementById('ms-guests').textContent = adults + ' adulto(s)' + (kids > 0 ? ', ' + kids + ' menor(es)' : '');
 }
-function submitBooking(){
-  const name=document.getElementById('f-name').value.trim();
-  const email=document.getElementById('f-email').value.trim();
-  const date=document.getElementById('f-date').value;
-  const hotel=document.getElementById('f-hotel').value.trim();
-  if(!name||!email||!date||!hotel){alert('Por favor completa todos los campos.');return}
-  alert('🎉 ¡Reserva recibida!\nTe contactaremos a '+email+' para confirmar.\n\n(Stripe pendiente de conectar)');
-  closeModal();
+
+async function submitBooking() {
+  const name  = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const date  = document.getElementById('f-date').value;
+  const hotel = document.getElementById('f-hotel').value.trim();
+  const adults = document.getElementById('f-adults').value;
+  const kids   = document.getElementById('f-children').value;
+  if (!name || !email || !date || !hotel) {
+    alert('Por favor completa todos los campos antes de continuar.');
+    return;
+  }
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Procesando...';
+  btn.disabled = true;
+
+  try {
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardElement,
+      billing_details: { name, email }
+    });
+
+    if (error) {
+      document.getElementById('card-errors').textContent = error.message;
+      btn.textContent = 'Pagar $299 MXN y Asegurar Mi Lugar';
+      btn.disabled = false;
+      return;
+    }
+
+    const response = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        paymentMethodId: paymentMethod.id,
+        name, email, date, hotel,
+        tour: currentTour,
+        guests: adults + ' adulto(s), ' + kids + ' menor(es)'
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      document.getElementById('modal').innerHTML = `
+        <div style="text-align:center;padding:40px 20px">
+          <div style="font-size:56px;margin-bottom:16px">🎉</div>
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:32px;margin-bottom:8px">¡Reserva Confirmada!</h3>
+          <p style="color:var(--teal-light);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px">${currentTour}</p>
+          <p style="color:var(--gray);font-size:14px;line-height:1.7">Recibirás tu confirmación en<br><strong style="color:var(--white)">${email}</strong></p>
+          <p style="color:var(--gray);font-size:13px;margin-top:12px">Pick-up: <strong style="color:var(--white)">${hotel}</strong> · ${date}</p>
+          <button onclick="closeModal()" style="margin-top:28px;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:12px 32px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Cerrar</button>
+        </div>`;
+    } else {
+      document.getElementById('card-errors').textContent = result.error || 'Error al procesar. Intenta de nuevo.';
+      btn.textContent = 'Pagar $299 MXN y Asegurar Mi Lugar';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    document.getElementById('card-errors').textContent = 'Error de conexión. Intenta de nuevo.';
+    btn.textContent = 'Pagar $299 MXN y Asegurar Mi Lugar';
+    btn.disabled = false;
+  }
 }
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}});
-},{threshold:0.08});
-document.querySelectorAll('.tour-card,.step').forEach(el=>{
-  el.style.opacity='0';el.style.transform='translateY(28px)';
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.tour-card,.step').forEach(el => {
+  el.style.opacity='0'; el.style.transform='translateY(28px)';
   el.style.transition='opacity .6s ease, transform .6s ease';
   obs.observe(el);
 });
