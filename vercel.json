@@ -1,0 +1,24 @@
+{
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*\\.(jpeg|jpg|png|gif|webp|svg|ico))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/index-es.html",
+      "dest": "/index-es.html"
+    },
+    {
+      "src": "/index-en.html",
+      "dest": "/index-en.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    }
+  ]
+}
