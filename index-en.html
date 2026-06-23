@@ -213,7 +213,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$1,010 <span>MXN</span></div><div class="equiv">≈ USD $54.59</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$950 <span>MXN</span></div><div class="equiv">≈ USD $51.35</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$100 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price</div>
       </div>
       <button class="book-btn" onclick="openModal('Isla Mujeres by Catamaran','isla')">Reserve My Spot →</button>
@@ -255,7 +255,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$162 <span>USD</span></div><div class="equiv">≈ MXN $2,997</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$126 <span>USD</span></div><div class="equiv">≈ MXN $2,331</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$100 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xcaret Plus','xcaret')">Reserve My Spot →</button>
@@ -297,7 +297,7 @@ footer p{color:var(--gray);font-size:12px}
           <div class="price-item"><div class="who">Adult</div><div class="amount">$115 <span>USD</span></div><div class="equiv">≈ MXN $2,128</div></div>
           <div class="price-item"><div class="who">Child (up to 11 yrs)</div><div class="amount">$91 <span>USD</span></div><div class="equiv">≈ MXN $1,684</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$299 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
+        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$100 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('Xel-Há Natural Park','xelha')">Reserve My Spot →</button>
@@ -315,7 +315,7 @@ footer p{color:var(--gray);font-size:12px}
     </div>
     <div class="how-steps">
       <div class="step"><div class="step-num">1</div><h4>Choose Your Tour</h4><p>Pick from Isla Mujeres, Xcaret Plus, or Xel-Há. Select your date and number of guests.</p></div>
-      <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with a fixed deposit of $299 MXN per booking. Fast, safe card payment.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with a fixed deposit of $100 MXN per booking. Fast, safe card payment.</p></div>
       <div class="step"><div class="step-num">3</div><h4>Enjoy & Pay the Rest</h4><p>We pick you up at your hotel. Pay the balance <strong>in cash on board</strong> and enjoy paradise!</p></div>
     </div>
   </div>
@@ -362,7 +362,7 @@ footer p{color:var(--gray);font-size:12px}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
       <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
         <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Pay now</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;">$299 MXN</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;">$100 MXN</div>
         <div style="font-size:10px;color:var(--gray);margin-top:3px;">Deposit by card</div>
       </div>
       <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
@@ -381,7 +381,7 @@ footer p{color:var(--gray);font-size:12px}
       <div id="card-element" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:13px 14px;"></div>
       <div id="card-errors" style="color:#ff6b6b;font-size:12px;margin-top:6px;"></div>
     </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pay $299 MXN & Secure My Spot</button>
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pay $100 MXN & Secure My Spot</button>
     <div class="secure-note">🔒 Secure payment via Stripe · No hidden fees · Flexible cancellation</div>
   </div>
 </div>
@@ -477,7 +477,7 @@ async function submitBooking(){
     const {paymentMethod,error}=await stripe.createPaymentMethod({type:'card',card:cardElement,billing_details:{name,email}});
     if(error){
       document.getElementById('card-errors').textContent=error.message;
-      btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false; return;
+      btn.textContent='Pay $100 MXN & Secure My Spot'; btn.disabled=false; return;
     }
     const response=await fetch('/api/checkout',{
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -505,7 +505,7 @@ async function submitBooking(){
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
             <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
               <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">✅ Already paid</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;">$299 MXN</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;">$100 MXN</div>
               <div style="font-size:10px;color:var(--gray);margin-top:3px;">Deposit by card</div>
             </div>
             <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
@@ -522,11 +522,11 @@ async function submitBooking(){
         </div>`;
     } else {
       document.getElementById('card-errors').textContent=result.error||'Payment error. Please try again.';
-      btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false;
+      btn.textContent='Pay $100 MXN & Secure My Spot'; btn.disabled=false;
     }
   } catch(err){
     document.getElementById('card-errors').textContent='Connection error. Please try again.';
-    btn.textContent='Pay $299 MXN & Secure My Spot'; btn.disabled=false;
+    btn.textContent='Pay $100 MXN & Secure My Spot'; btn.disabled=false;
   }
 }
 const obs=new IntersectionObserver(entries=>{
