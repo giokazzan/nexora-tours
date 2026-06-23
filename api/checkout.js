@@ -15,9 +15,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Crear PaymentIntent por $299 MXN
+    // Crear PaymentIntent por $100 MXN
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 29900, // en centavos → $299.00 MXN
+      amount: 10000, // en centavos → $100.00 MXN
       currency: 'mxn',
       payment_method: paymentMethodId,
       confirm: true,
