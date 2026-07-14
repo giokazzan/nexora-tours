@@ -9,7 +9,7 @@
 <style>
 :root{--teal:#0b9e99;--teal-dark:#076b68;--teal-light:#14c6bf;--gold:#f5c842;--navy:#071a26;--navy-mid:#0d2d3f;--white:#fff;--off-white:#f0f8f7;--gray:#8ab2b0}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden}
 body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(7,26,38,0.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(11,158,153,0.25)}
@@ -483,13 +483,31 @@ function openModal(tourName, tourKey) {
   const t = new Date(); t.setDate(t.getDate()+1);
   document.getElementById('f-date').min = t.toISOString().split('T')[0];
   document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  lockBodyScroll();
   updateSummary();
+}
+
+let scrollYGuardado = 0;
+function lockBodyScroll() {
+  scrollYGuardado = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollYGuardado}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+}
+function unlockBodyScroll() {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  window.scrollTo(0, scrollYGuardado);
 }
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  unlockBodyScroll();
 }
 
 function handleOverlayClick(e) { if (e.target.id === 'modal-overlay') closeModal(); }
