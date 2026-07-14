@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora | Kazzan — Tours Cancún</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -92,7 +92,7 @@ details summary::-webkit-details-marker{display:none}
 
 .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(5,15,22,0.93);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.4);border-radius:16px;padding:36px;max-width:500px;width:100%;transform:translateY(28px);transition:transform .3s;position:relative;max-height:92vh;overflow-y:auto}
+.modal{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.4);border-radius:16px;padding:36px;max-width:500px;width:100%;transform:translateY(28px);transition:transform .3s;position:relative;max-height:92vh;max-height:92dvh;overflow-y:auto}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--gray);font-size:26px;cursor:pointer;line-height:1}
 .modal-close:hover{color:var(--white)}
@@ -108,7 +108,7 @@ details summary::-webkit-details-marker{display:none}
 .dep-detail{color:var(--gray);font-size:11px;margin-top:4px}
 .form-group{margin-bottom:14px}
 .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
-.form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;transition:border-color .2s;outline:none}
+.form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'Barlow',sans-serif;font-size:16px;transition:border-color .2s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--teal)}
 .form-group select option{background:var(--navy-mid)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -331,7 +331,7 @@ footer p{color:var(--gray);font-size:12px}
     </div>
     <div class="how-steps">
       <div class="step"><div class="step-num">1</div><h4>Elige Tu Tour</h4><p>Selecciona entre Isla Mujeres, Xcaret Plus o Xel-Há. Elige tu fecha y número de personas.</p></div>
-      <div class="step"><div class="step-num">2</div><h4>Paga el Depósito</h4><p>Aparta tu lugar con un depósito fijo de $100 MXN por reservación. Pago rápido y seguro con tarjeta.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Paga el Depósito</h4><p>Aparta tu lugar con un depósito fijo de $100 MXN por reservación, vía transferencia bancaria.</p></div>
       <div class="step"><div class="step-num">3</div><h4>Disfruta y Paga el Resto</h4><p>Te recogemos en tu hotel. Pagas el saldo restante <strong>en efectivo al abordar</strong> y ¡a vivir el paraíso!</p></div>
     </div>
   </div>
@@ -381,9 +381,9 @@ footer p{color:var(--gray);font-size:12px}
     <!-- Desglose depósito vs saldo -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
       <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Pagas ahora</div>
+        <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Anticipo por transferencia</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;">$100 MXN</div>
-        <div style="font-size:10px;color:var(--gray);margin-top:3px;">Depósito con tarjeta</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:3px;">Asegura tu lugar</div>
       </div>
       <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
         <div style="font-size:11px;color:var(--teal-light);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Pagas al abordar</div>
@@ -396,26 +396,25 @@ footer p{color:var(--gray);font-size:12px}
     <div class="form-group"><label>Correo Electrónico</label><input type="email" placeholder="tu@correo.com" id="f-email"></div>
     <div class="form-group"><label>Fecha del Tour</label><input type="date" id="f-date"></div>
     <div class="form-group"><label>Hotel / Dirección de Pick-up</label><input type="text" placeholder="Nombre del hotel o dirección" id="f-hotel"></div>
+
     <div class="form-group">
-      <label>Número de Tarjeta</label>
-      <div id="card-element" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:13px 14px;"></div>
-      <div id="card-errors" style="color:#ff6b6b;font-size:12px;margin-top:6px;"></div>
+      <label>Anticipo por transferencia bancaria</label>
+      <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:16px;font-size:13px;line-height:2;">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Institución</span><strong style="color:var(--teal-light)">BBVA</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Beneficiario</span><strong style="color:var(--teal-light)">Membresía Nexora</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Tarjeta</span><strong style="letter-spacing:.06em;color:var(--gold)">4152 3141 9214 8651</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--gray)">Referencia</span><strong style="color:var(--gold)">Tu nombre completo</strong></div>
+      </div>
+      <div class="alert-warning" style="margin-top:10px;margin-bottom:0">Después de transferir, envía tu comprobante por WhatsApp para confirmar tu lugar en menos de 24 horas.</div>
     </div>
-    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Pagar $100 MXN y Asegurar Mi Lugar</button>
-    <div class="secure-note">🔒 Pago seguro con Stripe · Sin cargos ocultos · Cancelación flexible</div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Confirmar Mi Reserva</button>
+    <div class="secure-note">🔒 Cuenta oficial de Nexora · Cancelación flexible</div>
   </div>
 </div>
 
-<script src="https://js.stripe.com/v3/"></script>
 <script>
-const stripe = Stripe('pk_live_51TOshV1gHtpjQ4WKSYVrFy2jqX8wBqpwg3UHfYnzpZlpIj611rc5tka53hjmWbawHwZkyejgmXxXYYiF9fpUARMv00Awzag9tr');
-const elements = stripe.elements();
-const cardElement = elements.create('card', {
-  style: {
-    base: { color:'#ffffff', fontFamily:'Barlow, sans-serif', fontSize:'15px', '::placeholder':{ color:'#8ab2b0' } },
-    invalid: { color:'#ff6b6b' }
-  }
-});
+const WA_NEXORA = '529982168410';
 
 // Precios por tour y nacionalidad (MXN con tipo de cambio 18.50, Isla Mujeres ya en MXN)
 const PRICES = {
@@ -432,7 +431,6 @@ const USD_PRICES = {
 const DEPOSIT = 100;
 let currentTour = '';
 let currentNac  = 'ext';
-let cardMounted = false;
 
 function fmt(n) { return n.toLocaleString('es-MX'); }
 
@@ -486,13 +484,6 @@ function openModal(tourName, tourKey) {
   document.getElementById('f-date').min = t.toISOString().split('T')[0];
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  if (!cardMounted) {
-    cardElement.mount('#card-element');
-    cardElement.on('change', e => {
-      document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
-    });
-    cardMounted = true;
-  }
   updateSummary();
 }
 
@@ -518,81 +509,29 @@ async function submitBooking() {
   const totalMXN = (adults * p.adult) + (kids * p.kid);
   const balance  = totalMXN - DEPOSIT;
   const tourLabel = document.getElementById('modal-tour-name').textContent;
+  const guests = adults + ' adulto(s)' + (kids > 0 ? ', ' + kids + ' menor(es)' : '');
 
-  const btn = document.getElementById('submit-btn');
-  btn.textContent = 'Procesando...';
-  btn.disabled = true;
+  const mensajeWA = `Hola, quiero confirmar mi reserva:\n\nTour: ${tourLabel}\nNombre: ${name}\nCorreo: ${email}\nFecha: ${date}\nHotel/Pick-up: ${hotel}\nPersonas: ${guests}\nTotal: $${fmt(totalMXN)} MXN\nAnticipo: $${DEPOSIT} MXN (transferencia)\nSaldo al abordar: $${fmt(balance)} MXN\n\nAdjunto mi comprobante de transferencia.`;
+  window.open(`https://wa.me/${WA_NEXORA}?text=${encodeURIComponent(mensajeWA)}`, '_blank');
 
-  try {
-    const { paymentMethod, error } = await stripe.createPaymentMethod({
-      type: 'card', card: cardElement, billing_details: { name, email }
-    });
-    if (error) {
-      document.getElementById('card-errors').textContent = error.message;
-      btn.textContent = 'Pagar $100 MXN y Asegurar Mi Lugar';
-      btn.disabled = false;
-      return;
-    }
-
-    const response = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        paymentMethodId: paymentMethod.id,
-        name, email, date, hotel,
-        tour: tourLabel,
-        guests: adults + ' adulto(s)' + (kids > 0 ? ', ' + kids + ' menor(es)' : ''),
-        nacionalidad: currentNac === 'ext' ? 'Extranjero' : 'Nacional',
-        totalMXN, balance
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      document.getElementById('modal').innerHTML = `
-        <div style="padding:32px 20px">
-          <div style="text-align:center;margin-bottom:24px">
-            <div style="font-size:52px;margin-bottom:12px">🎉</div>
-            <h3 style="font-family:'Bebas Neue',sans-serif;font-size:34px;margin-bottom:4px">¡Reserva Confirmada!</h3>
-            <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${tourLabel}</p>
-          </div>
-          <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;">
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Nombre</span><strong>${name}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Email</span><strong>${email}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Fecha</span><strong>${date}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Pick-up</span><strong>${hotel}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Personas</span><strong>${adults} adulto(s)${kids>0?', '+kids+' menor(es)':''}</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Total del tour</span><strong>$${fmt(totalMXN)} MXN</strong></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-            <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
-              <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">✅ Ya pagaste</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;">$100 MXN</div>
-              <div style="font-size:10px;color:var(--gray);margin-top:3px;">Depósito con tarjeta</div>
-            </div>
-            <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
-              <div style="font-size:10px;color:var(--teal-light);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">💵 Pagas al abordar</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--teal-light);line-height:1;">$${fmt(balance)} MXN</div>
-              <div style="font-size:10px;color:var(--gold);margin-top:3px;font-weight:700;">Solo efectivo</div>
-            </div>
-          </div>
-          <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;">
-            💵 Recuerda traer <strong>$${fmt(balance)} MXN en efectivo</strong> el día del tour para pagar al abordar.
-          </div>
-          <p style="color:var(--gray);font-size:12px;text-align:center;margin-bottom:20px">Te enviaremos la confirmación a <strong style="color:var(--white)">${email}</strong></p>
-          <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Cerrar</button>
-        </div>`;
-    } else {
-      document.getElementById('card-errors').textContent = result.error || 'Error al procesar. Intenta de nuevo.';
-      btn.textContent = 'Pagar $100 MXN y Asegurar Mi Lugar';
-      btn.disabled = false;
-    }
-  } catch(err) {
-    document.getElementById('card-errors').textContent = 'Error de conexión. Intenta de nuevo.';
-    btn.textContent = 'Pagar $100 MXN y Asegurar Mi Lugar';
-    btn.disabled = false;
-  }
+  document.getElementById('modal').innerHTML = `
+    <div style="padding:32px 20px">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:52px;margin-bottom:12px">📋</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:34px;margin-bottom:4px">¡Solicitud enviada!</h3>
+        <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${tourLabel}</p>
+      </div>
+      <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Nombre</span><strong>${name}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Fecha</span><strong>${date}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Personas</span><strong>${guests}</strong></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Total del tour</span><strong>$${fmt(totalMXN)} MXN</strong></div>
+      </div>
+      <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;line-height:1.6">
+        Se abrió WhatsApp con tu reserva. Envía ahí tu <strong>comprobante de transferencia</strong> ($${DEPOSIT} MXN) para confirmar tu lugar — y no olvides <strong>$${fmt(balance)} MXN en efectivo</strong> el día del tour.
+      </div>
+      <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Cerrar</button>
+    </div>`;
 }
 
 const obs = new IntersectionObserver(entries => {
