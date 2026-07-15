@@ -250,6 +250,7 @@ footer p{color:var(--gray);font-size:12px}
     <div class="form-group"><label>Correo Electrónico</label><input type="email" placeholder="tu@correo.com" id="f-email"></div>
     <div class="form-group"><label>Fecha del Tour</label><input type="date" id="f-date"></div>
     <div class="form-group"><label>Hotel / Dirección de Pick-up</label><input type="text" placeholder="Nombre del hotel o dirección" id="f-hotel"></div>
+    <div class="form-group"><label>WhatsApp de contacto</label><input type="tel" placeholder="10 dígitos" id="f-whatsapp"></div>
 
     <div class="form-group">
       <label>Anticipo por transferencia bancaria</label>
@@ -413,6 +414,7 @@ async function submitBooking() {
   const email  = document.getElementById('f-email').value.trim();
   const date   = document.getElementById('f-date').value;
   const hotel  = document.getElementById('f-hotel').value.trim();
+  const whatsapp = document.getElementById('f-whatsapp').value.trim().replace(/[^0-9]/g, '');
   const adults = parseInt(document.getElementById('f-adults').value) || 1;
   const kids   = parseInt(document.getElementById('f-children').value) || 0;
   const comprobanteInput = document.getElementById('f-comprobante');
@@ -420,8 +422,12 @@ async function submitBooking() {
   const comprobanteErr = document.getElementById('comprobante-err');
   comprobanteErr.textContent = '';
 
-  if (!name || !email || !date || !hotel) {
+  if (!name || !email || !date || !hotel || !whatsapp) {
     alert('Por favor completa todos los campos antes de continuar.');
+    return;
+  }
+  if (whatsapp.length < 10) {
+    comprobanteErr.textContent = 'Ingresa un número de WhatsApp válido (10 dígitos).';
     return;
   }
   if (!comprobanteFile) {
@@ -472,7 +478,7 @@ async function submitBooking() {
 
     await window.crearReservaFirestore({
       folio, tourId: currentTour, tourNombre: tourLabel,
-      nombre: name, email, hotel, fecha: date,
+      nombre: name, email, whatsapp, hotel, fecha: date,
       adultos: adults, menores: kids,
       totalMXN, deposito: DEPOSIT, saldo: balance,
       comprobanteUrl: resultSubida.url,
@@ -486,7 +492,7 @@ async function submitBooking() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          folio, tourNombre: tourLabel, nombre: name, email, hotel, fecha: date,
+          folio, tourNombre: tourLabel, nombre: name, email, whatsapp, hotel, fecha: date,
           personas: guests, totalMXN: fmt(totalMXN), deposito: DEPOSIT,
           comprobanteUrl: resultSubida.url,
         }),
