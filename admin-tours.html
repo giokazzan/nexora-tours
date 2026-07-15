@@ -47,6 +47,7 @@ button{cursor:pointer;font-family:inherit;}
 .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
 .cal-day.bloqueado{background:rgba(255,107,107,0.15);border-color:rgba(255,107,107,0.4);color:#ff6b6b;}
 .cal-day.pasado{opacity:.25;cursor:default;}
+.cal-day.guardando{opacity:.4;pointer-events:none;}
 .cal-day-label{font-size:10px;color:var(--gray);text-align:center;padding:4px 0;}
 </style>
 </head>
@@ -186,6 +187,7 @@ button{cursor:pointer;font-family:inherit;}
         <button class="btn-secondary btn" style="width:auto;margin:0;padding:8px 14px" onclick="cambiarMesCalendario(1)">→</button>
       </div>
       <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+      <div id="cal-status" style="min-height:20px;margin-top:10px;font-size:12px;font-weight:700"></div>
       <div style="display:flex;gap:16px;margin-top:14px;font-size:11px;color:var(--gray)">
         <span>⬜ Disponible</span>
         <span>🟥 Bloqueado</span>
@@ -597,21 +599,35 @@ function renderCalendario() {
     const fechaStr = fecha.toISOString().split('T')[0];
     const esPasado = fecha < hoy;
     const bloqueado = bloqueadas.has(fechaStr);
-    html += `<div class="cal-day ${bloqueado ? 'bloqueado' : ''} ${esPasado ? 'pasado' : ''}" ${esPasado ? '' : `onclick="toggleFechaBloqueada('${vehId}','${fechaStr}',${bloqueado})"`}>${dia}</div>`;
+    html += `<div class="cal-day ${bloqueado ? 'bloqueado' : ''} ${esPasado ? 'pasado' : ''}" data-fecha="${fechaStr}" ${esPasado ? '' : `onclick="toggleFechaBloqueada('${vehId}','${fechaStr}',${bloqueado},this)"`}>${dia}</div>`;
   }
   document.getElementById('cal-grid').innerHTML = html;
 }
 
-window.toggleFechaBloqueada = async (vehId, fechaStr, estaBloqueada) => {
-  await updateDoc(doc(db, 'nexora_vehiculos', vehId), {
-    fechasBloqueadas: estaBloqueada ? arrayRemove(fechaStr) : arrayUnion(fechaStr),
-  });
-  const v = vehiculosCache.find(x => x.id === vehId);
-  if (v) {
-    if (estaBloqueada) v.fechasBloqueadas = (v.fechasBloqueadas || []).filter(f => f !== fechaStr);
-    else v.fechasBloqueadas = [...(v.fechasBloqueadas || []), fechaStr];
+window.toggleFechaBloqueada = async (vehId, fechaStr, estaBloqueada, celda) => {
+  const statusEl = document.getElementById('cal-status');
+  celda.classList.add('guardando');
+  statusEl.style.color = 'var(--gray)';
+  statusEl.textContent = 'Guardando cambio...';
+
+  try {
+    await updateDoc(doc(db, 'nexora_vehiculos', vehId), {
+      fechasBloqueadas: estaBloqueada ? arrayRemove(fechaStr) : arrayUnion(fechaStr),
+    });
+    const v = vehiculosCache.find(x => x.id === vehId);
+    if (v) {
+      if (estaBloqueada) v.fechasBloqueadas = (v.fechasBloqueadas || []).filter(f => f !== fechaStr);
+      else v.fechasBloqueadas = [...(v.fechasBloqueadas || []), fechaStr];
+    }
+    renderCalendario();
+    statusEl.style.color = '#5dcf8e';
+    statusEl.textContent = `✓ Guardado — ${fechaStr} ahora está ${estaBloqueada ? 'disponible' : 'bloqueada'}.`;
+    setTimeout(() => { if (statusEl.textContent.startsWith('✓')) statusEl.textContent = ''; }, 3000);
+  } catch (e) {
+    celda.classList.remove('guardando');
+    statusEl.style.color = '#ff6b6b';
+    statusEl.textContent = `⚠️ No se pudo guardar el cambio en ${fechaStr}. Intenta de nuevo — no se actualizó el calendario.`;
   }
-  renderCalendario();
 };
 </script>
 </body>
