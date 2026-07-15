@@ -142,10 +142,6 @@ footer p{color:var(--gray);font-size:12px}
   .form-row{grid-template-columns:1fr}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-<script>
-  (function(){ try{ emailjs.init({ publicKey: 'JXK1Ore40Bq7ub5ZV' }); }catch(e){} })();
-</script>
 </head>
 <body>
 
@@ -371,10 +367,6 @@ function closeModal() {
 
 function handleOverlayClick(e) { if (e.target.id === 'modal-overlay') closeModal(); }
 
-const EMAILJS_SERVICE_ADMIN   = 'service_x77bs5j';
-const EMAILJS_TEMPLATE_ADMIN  = 'template_dgqr9ec'; // reusado del club, mismo destinatario admin
-const EMAILJS_TEMPLATE_CLIENTE = 'PENDIENTE_CONFIGURAR'; // se actualiza cuando esté la plantilla nueva
-
 function generarFolio() {
   return 'TUR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
 }
@@ -449,27 +441,18 @@ async function submitBooking() {
       expira: expira.toISOString(),
     });
 
-    // Aviso al admin (reusa la plantilla del club, mapeando los campos a este contexto)
+    btn.textContent = 'Enviando confirmación...';
     try {
-      await emailjs.send(EMAILJS_SERVICE_ADMIN, EMAILJS_TEMPLATE_ADMIN, {
-        nombre: name, email, telefono: hotel,
-        plan: 'TOUR: ' + tourLabel,
-        ciudad: guests,
-        folio, fecha_firma: date,
-        metodo_pago: `Transferencia — anticipo $${DEPOSIT} MXN — comprobante: ${resultSubida.url}`,
+      await fetch('/api/enviar-confirmacion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          folio, tourNombre: tourLabel, nombre: name, email, hotel, fecha: date,
+          personas: guests, totalMXN: fmt(totalMXN), deposito: DEPOSIT,
+          comprobanteUrl: resultSubida.url,
+        }),
       });
-    } catch (e) { console.warn('EmailJS admin:', e); }
-
-    // Confirmación al cliente (plantilla dedicada — se activa en cuanto esté configurada)
-    if (EMAILJS_TEMPLATE_CLIENTE !== 'PENDIENTE_CONFIGURAR') {
-      try {
-        await emailjs.send(EMAILJS_SERVICE_ADMIN, EMAILJS_TEMPLATE_CLIENTE, {
-          to_name: name, to_email: email, tour: tourLabel, fecha: date,
-          personas: guests, total: `$${fmt(totalMXN)} MXN`,
-          anticipo: `$${DEPOSIT} MXN`, folio,
-        });
-      } catch (e) { console.warn('EmailJS cliente:', e); }
-    }
+    } catch (e) { console.warn('Error enviando correos:', e); }
 
     document.getElementById('modal').innerHTML = `
       <div style="padding:32px 20px">
