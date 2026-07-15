@@ -5,12 +5,15 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { folio, nombreArchivo, contentType, base64 } = req.body;
-  if (!folio || !nombreArchivo || !base64) {
-    return res.status(400).json({ error: 'Faltan datos (folio, nombreArchivo o base64)' });
+  const { folio, carpeta, nombreArchivo, contentType, base64 } = req.body;
+  if ((!folio && !carpeta) || !nombreArchivo || !base64) {
+    return res.status(400).json({ error: 'Faltan datos (folio o carpeta, nombreArchivo, o base64)' });
   }
-  if (!/^[A-Z0-9-]+$/.test(folio)) {
+  if (folio && !/^[A-Z0-9-]+$/.test(folio)) {
     return res.status(400).json({ error: 'Folio inválido' });
+  }
+  if (carpeta && !/^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*$/.test(carpeta)) {
+    return res.status(400).json({ error: 'Carpeta inválida' });
   }
 
   try {
@@ -30,7 +33,8 @@ export default async function handler(req, res) {
     const nombreLimpio = nombreArchivo
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const path = `tours-reservas/${folio}/${Date.now()}_${nombreLimpio}`;
+    const prefijo = folio ? `tours-reservas/${folio}` : carpeta;
+    const path = `${prefijo}/${Date.now()}_${nombreLimpio}`;
 
     const resp = await fetch(`https://cvufvcdyanfsbcilnony.supabase.co/storage/v1/object/comprobantes/${path}`, {
       method: 'POST',
