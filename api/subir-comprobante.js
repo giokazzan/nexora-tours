@@ -18,6 +18,15 @@ export default async function handler(req, res) {
     if (buffer.length > 3 * 1024 * 1024) {
       return res.status(400).json({ error: 'El archivo pesa más de 3MB' });
     }
+
+    const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+    if (!key) {
+      return res.status(500).json({ error: 'Falta la variable SUPABASE_SERVICE_ROLE_KEY en Vercel.' });
+    }
+    if (key.split('.').length !== 3) {
+      return res.status(500).json({ error: `La llave SUPABASE_SERVICE_ROLE_KEY no tiene el formato correcto (debe tener 3 partes separadas por puntos, tiene ${key.split('.').length}). Revisa que se haya pegado completa, sin saltos de línea. Longitud actual: ${key.length} caracteres (debería ser ~220).` });
+    }
+
     const nombreLimpio = nombreArchivo
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9.\-_]/g, '_');
@@ -27,8 +36,8 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': contentType || 'application/octet-stream',
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'apikey': key,
+        'Authorization': `Bearer ${key}`,
         'x-upsert': 'true',
       },
       body: buffer,
