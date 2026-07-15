@@ -2,6 +2,7 @@ const FROM = 'Nexora <reservas@nexora-travel.com>';
 const ADMIN_EMAIL = 'admkazzan@gmail.com';
 
 function plantillaAdmin(d) {
+  const linkWa = `https://wa.me/52${d.whatsapp}?text=${encodeURIComponent('Hola ' + d.nombre + ', te contactamos de Nexora sobre tu reserva ' + d.folio + '.')}`;
   return `
   <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#0d2d3f;color:#fff;border-radius:12px;overflow:hidden">
     <div style="background:#0b9e99;padding:18px 24px"><strong style="font-size:18px;letter-spacing:1px">NUEVA RESERVA DE TOUR</strong></div>
@@ -11,13 +12,15 @@ function plantillaAdmin(d) {
         <tr><td style="color:#8ab2b0">Folio</td><td style="text-align:right"><strong>${d.folio}</strong></td></tr>
         <tr><td style="color:#8ab2b0">Nombre</td><td style="text-align:right">${d.nombre}</td></tr>
         <tr><td style="color:#8ab2b0">Correo</td><td style="text-align:right">${d.email}</td></tr>
+        <tr><td style="color:#8ab2b0">WhatsApp</td><td style="text-align:right">${d.whatsapp || '—'}</td></tr>
         <tr><td style="color:#8ab2b0">Hotel / Pick-up</td><td style="text-align:right">${d.hotel}</td></tr>
         <tr><td style="color:#8ab2b0">Fecha del tour</td><td style="text-align:right">${d.fecha}</td></tr>
         <tr><td style="color:#8ab2b0">Personas</td><td style="text-align:right">${d.personas}</td></tr>
         <tr><td style="color:#8ab2b0">Total</td><td style="text-align:right">$${d.totalMXN} MXN</td></tr>
         <tr><td style="color:#8ab2b0">Anticipo</td><td style="text-align:right">$${d.deposito} MXN</td></tr>
       </table>
-      <a href="${d.comprobanteUrl}" style="display:block;margin-top:20px;background:#f5c842;color:#0d2d3f;text-decoration:none;text-align:center;padding:12px;border-radius:8px;font-weight:bold">Ver comprobante subido</a>
+      <a href="${d.comprobanteUrl}" style="display:block;margin-top:16px;background:#f5c842;color:#0d2d3f;text-decoration:none;text-align:center;padding:12px;border-radius:8px;font-weight:bold">Ver comprobante subido</a>
+      ${d.whatsapp ? `<a href="${linkWa}" style="display:block;margin-top:10px;background:#25D366;color:#fff;text-decoration:none;text-align:center;padding:12px;border-radius:8px;font-weight:bold">Contactar por WhatsApp</a>` : ''}
       <p style="font-size:12px;color:#8ab2b0;margin-top:16px">Tienes hasta 3 horas para validar el pago antes de que se marque como atrasada.</p>
     </div>
   </div>`;
@@ -47,6 +50,10 @@ function plantillaCliente(d) {
         <div style="font-size:24px;font-weight:bold;color:#8a7015;letter-spacing:1px">${d.folio}</div>
       </div>
       <p style="font-size:13px;color:#666;line-height:1.6">Validamos tu comprobante en un máximo de <strong>3 horas</strong>. Guarda este folio para dar seguimiento a tu reserva.</p>
+      <div style="background:#f7f7f5;border-radius:8px;padding:12px 16px;margin-top:16px;text-align:center">
+        <p style="font-size:12px;color:#888;margin:0">¿No recibiste confirmación en 6 horas?<br>
+        <a href="https://wa.me/529982168410?text=${encodeURIComponent('Hola, sigo esperando confirmación de mi reserva, folio ' + d.folio)}" style="color:#0b9e99;font-weight:bold;text-decoration:none">Contacta a soporte por WhatsApp →</a></p>
+      </div>
     </div>
   </div>`;
 }
