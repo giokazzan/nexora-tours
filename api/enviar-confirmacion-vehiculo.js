@@ -2,7 +2,7 @@ const FROM = 'Nexora <reservas@nexora-travel.com>';
 const ADMIN_EMAIL = 'admkazzan@gmail.com';
 
 function plantillaAdmin(d) {
-  const linkWa = `https://wa.me/52${d.whatsapp}?text=${encodeURIComponent('Hola ' + d.nombre + ', te contactamos de Nexora sobre tu reserva de vehículo ' + d.folio + '.')}`;
+  const linkWa = `https://wa.me/${d.whatsapp}?text=${encodeURIComponent('Hola ' + d.nombre + ', te contactamos de Nexora sobre tu reserva de vehículo ' + d.folio + '.')}`;
   return `
   <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#0d2d3f;color:#fff;border-radius:12px;overflow:hidden">
     <div style="background:#0b9e99;padding:18px 24px"><strong style="font-size:18px;letter-spacing:1px">NUEVA RESERVA DE VEHÍCULO</strong></div>
