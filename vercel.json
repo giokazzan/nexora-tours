@@ -44,6 +44,10 @@
       "dest": "/api/enviar-confirmacion-vehiculo.js"
     },
     {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
       "src": "/(.*\\.(jpeg|jpg|png|gif|webp))",
       "dest": "/public/$1"
     },
