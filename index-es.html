@@ -371,6 +371,34 @@ function generarFolio() {
   return 'TUR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
 }
 
+function comprimirImagenSiEsNecesario(file) {
+  return new Promise((resolve) => {
+    // Los PDF y archivos ya pequeños no se tocan
+    if (!file.type.startsWith('image/') || file.size <= 1.2 * 1024 * 1024) {
+      resolve(file);
+      return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX_LADO = 1600;
+      let { width, height } = img;
+      if (width > height && width > MAX_LADO) { height = height * (MAX_LADO / width); width = MAX_LADO; }
+      else if (height > MAX_LADO) { width = width * (MAX_LADO / height); height = MAX_LADO; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.75);
+    };
+    img.onerror = () => resolve(file); // si algo falla, seguimos con el archivo original
+    img.src = url;
+  });
+}
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -400,10 +428,6 @@ async function submitBooking() {
     comprobanteErr.textContent = 'Sube tu comprobante de transferencia para continuar.';
     return;
   }
-  if (comprobanteFile.size > 8 * 1024 * 1024) {
-    comprobanteErr.textContent = 'El archivo pesa más de 8MB, sube uno más ligero.';
-    return;
-  }
 
   const p        = PRICES[currentTour][currentNac];
   const totalMXN = (adults * p.adult) + (kids * p.kid);
@@ -413,17 +437,32 @@ async function submitBooking() {
   const folio = generarFolio();
 
   const btn = document.getElementById('submit-btn');
-  btn.textContent = 'Subiendo comprobante...';
+  btn.textContent = 'Preparando comprobante...';
   btn.disabled = true;
 
+  const comprobanteComprimido = await comprimirImagenSiEsNecesario(comprobanteFile);
+  if (comprobanteComprimido.size > 3 * 1024 * 1024) {
+    comprobanteErr.textContent = 'Tu archivo sigue pesando demasiado incluso comprimido — prueba con otra foto o un PDF más ligero.';
+    btn.textContent = 'Confirmar Mi Reserva';
+    btn.disabled = false;
+    return;
+  }
+
+  btn.textContent = 'Subiendo comprobante...';
+
   try {
-    const base64 = await fileToBase64(comprobanteFile);
+    const base64 = await fileToBase64(comprobanteComprimido);
     const respSubida = await fetch('/api/subir-comprobante', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ folio, nombreArchivo: comprobanteFile.name, contentType: comprobanteFile.type, base64 }),
+      body: JSON.stringify({ folio, nombreArchivo: comprobanteComprimido.name, contentType: comprobanteComprimido.type, base64 }),
     });
-    const resultSubida = await respSubida.json();
+    let resultSubida;
+    try {
+      resultSubida = await respSubida.json();
+    } catch (parseErr) {
+      throw new Error('El servidor no respondió correctamente (código ' + respSubida.status + '). Es probable que el archivo sea muy pesado — intenta con una foto más ligera.');
+    }
     if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante');
 
     btn.textContent = 'Guardando reserva...';
