@@ -6,6 +6,14 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/subir-comprobante.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/enviar-confirmacion.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "public/**",
       "use": "@vercel/static"
     },
@@ -18,6 +26,14 @@
     {
       "src": "/api/checkout",
       "dest": "/api/checkout.js"
+    },
+    {
+      "src": "/api/subir-comprobante",
+      "dest": "/api/subir-comprobante.js"
+    },
+    {
+      "src": "/api/enviar-confirmacion",
+      "dest": "/api/enviar-confirmacion.js"
     },
     {
       "src": "/(.*\\.(jpeg|jpg|png|gif|webp))",
