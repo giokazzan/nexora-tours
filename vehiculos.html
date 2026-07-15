@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vehículos en Renta — Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#071a26;--navy-mid:#0d2d3f;--teal:#0b9e99;--teal-light:#3ecfc4;--gold:#f5c842;--white:#fff;--gray:#8ab2b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;text-decoration:none;color:var(--white);}
+.logo span{color:var(--gold);}
+header a.back{color:var(--gray);font-size:13px;text-decoration:none;}
+
+.hero{text-align:center;padding:24px 0 40px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin-bottom:10px;}
+.hero h1 .teal{color:var(--teal-light);}
+.hero p{color:var(--gray);font-size:.95rem;max-width:560px;margin:0 auto;}
+
+.veh-card{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.25);border-radius:16px;overflow:hidden;margin-bottom:28px;}
+.veh-gallery{position:relative;background:#fff;}
+.veh-gallery img#veh-main{width:100%;display:block;aspect-ratio:3/2;object-fit:contain;background:#fff;}
+.veh-thumbs{display:flex;gap:6px;padding:8px;background:#f2f0ea;}
+.veh-thumb{width:56px;height:40px;object-fit:cover;border-radius:5px;cursor:pointer;opacity:.5;border:2px solid transparent;}
+.veh-thumb.active{opacity:1;border-color:var(--teal);}
+.veh-body{padding:24px;}
+.veh-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px;}
+.veh-desc{color:var(--gray);font-size:.88rem;line-height:1.6;margin-bottom:18px;}
+.veh-feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.veh-feat{font-size:.78rem;background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:8px;padding:9px 12px;}
+.veh-price-row{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.08);padding-top:18px;flex-wrap:wrap;gap:14px;}
+.veh-price{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);}
+.veh-price span{font-size:.9rem;color:var(--gray);}
+.book-btn{background:var(--teal);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-family:'Barlow',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+
+details.politicas{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin:0 20px 24px;font-size:.82rem;color:var(--gray);}
+details.politicas summary{cursor:pointer;color:var(--teal-light);font-weight:700;margin-bottom:8px;}
+details.politicas .pol-item{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;height:100dvh;z-index:200;background:rgba(5,15,22,0.93);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;touch-action:none}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.4);border-radius:16px;padding:32px;max-width:480px;width:100%;transform:translateY(28px);transition:transform .3s;position:relative;max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--gray);font-size:26px;cursor:pointer;line-height:1}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:30px;margin-bottom:14px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:inherit;font-size:16px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.resumen-box{background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;}
+.resumen-box .r{display:flex;justify-content:space-between;padding:4px 0;}
+.transfer-box{background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:16px;font-size:13px;line-height:2;margin-bottom:12px;}
+.transfer-box .r{display:flex;justify-content:space-between;}
+.alert-warning{background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold);}
+.submit-btn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
+.err{color:#ff6b6b;font-size:12px;min-height:14px;margin-top:6px;}
+.empty{text-align:center;color:var(--gray);padding:60px 20px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a href="https://www.nexora-travel.com/" class="logo">NEXORA <span>|</span> KAZZAN</a>
+    <a href="https://www.nexora-travel.com/#nv-vehiculos" class="back">← Volver al inicio</a>
+  </header>
+
+  <div class="hero">
+    <h1>Muévete con <span class="teal">libertad</span> en Cancún</h1>
+    <p>Rentas directo, sin tarjeta de crédito. Aparta tu vehículo con un anticipo por transferencia y paga el resto al recibirlo.</p>
+  </div>
+
+  <div id="vehiculos-lista">
+    <div class="empty">Cargando vehículos...</div>
+  </div>
+</div>
+
+<!-- Modal de reserva -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modal-veh-name">Reservar</h3>
+
+    <div class="form-group"><label>Nombre completo</label><input type="text" id="f-name"></div>
+    <div class="form-group"><label>Correo electrónico</label><input type="email" id="f-email"></div>
+    <div class="form-group"><label>WhatsApp (con lada)</label><input type="tel" id="f-whatsapp" placeholder="10 dígitos"></div>
+
+    <div class="row2">
+      <div class="form-group"><label>Fecha de inicio</label><input type="date" id="f-fecha-inicio" onchange="actualizarResumenReserva()"></div>
+      <div class="form-group"><label>Fecha de fin</label><input type="date" id="f-fecha-fin" onchange="actualizarResumenReserva()"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Zona de entrega</label>
+      <select id="f-zona" onchange="actualizarResumenReserva()"></select>
+    </div>
+
+    <div class="resumen-box" id="resumen-box" style="display:none">
+      <div class="r"><span style="color:var(--gray)">Días</span><strong id="r-dias">—</strong></div>
+      <div class="r"><span style="color:var(--gray)">Total estimado</span><strong id="r-total">—</strong></div>
+      <div class="r"><span style="color:var(--gray)">Anticipo a transferir</span><strong id="r-deposito" style="color:var(--gold)">—</strong></div>
+    </div>
+    <div class="err" id="fechas-err"></div>
+
+    <div class="transfer-box">
+      <div class="r"><span style="color:var(--gray)">Institución</span><strong style="color:var(--teal-light)">BBVA</strong></div>
+      <div class="r"><span style="color:var(--gray)">Beneficiario</span><strong style="color:var(--teal-light)">Membresía Nexora</strong></div>
+      <div class="r"><span style="color:var(--gray)">Tarjeta</span><strong style="letter-spacing:.06em;color:var(--gold)">4152 3141 9214 8651</strong></div>
+      <div class="r"><span style="color:var(--gray)">Referencia</span><strong style="color:var(--gold)">Tu nombre completo</strong></div>
+    </div>
+    <div class="alert-warning" style="margin-bottom:14px">Sube tu comprobante abajo — validamos tu anticipo en un máximo de 3 horas. El resto ($ restante + $500 limpieza/entrega + $3,000 depósito en garantía) se paga en efectivo o transferencia al recibir el vehículo.</div>
+
+    <div class="form-group">
+      <label>Comprobante de transferencia</label>
+      <input type="file" id="f-comprobante" accept="image/*,.pdf">
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitReserva()">Confirmar Mi Reserva</button>
+    <div class="err" id="comprobante-err"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, doc, addDoc, updateDoc, arrayUnion, serverTimestamp, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJR13NWfWBURGZZtUhzA0OVjm3nSxCR28",
+  authDomain: "nexora-club.firebaseapp.com",
+  projectId: "nexora-club",
+  storageBucket: "nexora-club.firebasestorage.app",
+  messagingSenderId: "651071612444",
+  appId: "1:651071612444:web:86bb7b36b1446220e661d9"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let VEHICULOS = [];
+let vehiculoActual = null;
+
+function fmt(n) { return n.toLocaleString('es-MX'); }
+
+function plantillaVehiculo(v) {
+  const img = (v.imagenes && v.imagenes[0]) || '';
+  const thumbs = (v.imagenes || []).map((url, i) => `<img src="${url}" class="veh-thumb ${i===0?'active':''}" onclick="cambiarFotoVeh(this,'${url}')">`).join('');
+  const feats = (v.highlights || []).map(h => `<div class="veh-feat">${h}</div>`).join('');
+  const politicasHtml = (v.politicas || '').split('\n').filter(Boolean).map(l => `<div class="pol-item">${l}</div>`).join('');
+  return `
+  <div class="veh-card">
+    <div class="veh-gallery">
+      <img id="veh-main-${v.id}" src="${img}" style="width:100%;display:block;aspect-ratio:3/2;object-fit:contain;background:#fff">
+      <div class="veh-thumbs">${thumbs}</div>
+    </div>
+    <div class="veh-body">
+      <div class="veh-name">${v.nombre}</div>
+      <p class="veh-desc">${v.descripcion || ''}</p>
+      <div class="veh-feats">${feats}</div>
+      <div class="veh-price-row">
+        <div>
+          <div style="font-size:.68rem;color:var(--gray);text-transform:uppercase">Desde</div>
+          <div class="veh-price">$${fmt(v.precioPorDia)} <span>MXN/día</span></div>
+        </div>
+        <button class="book-btn" onclick="abrirModalVehiculo('${v.id}')">Reservar →</button>
+      </div>
+    </div>
+  </div>
+  <details class="politicas">
+    <summary>▸ Ver políticas de renta — ${v.nombre}</summary>
+    ${politicasHtml}
+  </details>`;
+}
+
+window.cambiarFotoVeh = (thumb, url) => {
+  const card = thumb.closest('.veh-card');
+  card.querySelector('img[id^="veh-main-"]').src = url;
+  card.querySelectorAll('.veh-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+};
+
+async function cargarVehiculos() {
+  const cont = document.getElementById('vehiculos-lista');
+  try {
+    const snap = await getDocs(query(collection(db, 'nexora_vehiculos'), orderBy('nombre')));
+    VEHICULOS = [];
+    snap.forEach(d => { const data = d.data(); if (data.activo !== false) VEHICULOS.push({ id: d.id, ...data }); });
+    if (!VEHICULOS.length) { cont.innerHTML = '<div class="empty">Muy pronto vehículos disponibles.</div>'; return; }
+    cont.innerHTML = VEHICULOS.map(plantillaVehiculo).join('');
+  } catch (e) {
+    cont.innerHTML = '<div class="empty">No se pudieron cargar los vehículos. Intenta recargar.</div>';
+  }
+}
+cargarVehiculos();
+
+window.abrirModalVehiculo = (id) => {
+  vehiculoActual = VEHICULOS.find(v => v.id === id);
+  if (!vehiculoActual) return;
+  document.getElementById('modal-veh-name').textContent = 'Reservar ' + vehiculoActual.nombre;
+  const zonaSel = document.getElementById('f-zona');
+  const zonas = [...(vehiculoActual.zonasIncluidas || []), ...(vehiculoActual.zonasConCosto || []).map(z => z + ' (costo extra)')];
+  zonaSel.innerHTML = zonas.map(z => `<option>${z}</option>`).join('');
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  document.getElementById('f-fecha-inicio').min = t.toISOString().split('T')[0];
+  document.getElementById('f-fecha-fin').min = t.toISOString().split('T')[0];
+  document.getElementById('resumen-box').style.display = 'none';
+  document.getElementById('fechas-err').textContent = '';
+  document.getElementById('modal-overlay').classList.add('open');
+  lockBodyScroll();
+};
+
+window.actualizarResumenReserva = () => {
+  const errEl = document.getElementById('fechas-err');
+  errEl.textContent = '';
+  const inicio = document.getElementById('f-fecha-inicio').value;
+  const fin = document.getElementById('f-fecha-fin').value;
+  if (!inicio || !fin || !vehiculoActual) { document.getElementById('resumen-box').style.display = 'none'; return; }
+
+  const dIni = new Date(inicio + 'T00:00:00');
+  const dFin = new Date(fin + 'T00:00:00');
+  const dias = Math.round((dFin - dIni) / 86400000);
+
+  if (dias < (vehiculoActual.minDias || 1)) {
+    errEl.textContent = `La renta mínima es de ${vehiculoActual.minDias || 1} días.`;
+    document.getElementById('resumen-box').style.display = 'none';
+    return;
+  }
+
+  const bloqueadas = new Set(vehiculoActual.fechasBloqueadas || []);
+  let hayConflicto = false;
+  for (let i = 0; i < dias; i++) {
+    const d = new Date(dIni); d.setDate(d.getDate() + i);
+    if (bloqueadas.has(d.toISOString().split('T')[0])) { hayConflicto = true; break; }
+  }
+  if (hayConflicto) {
+    errEl.textContent = 'Alguna de las fechas seleccionadas ya no está disponible. Elige otro rango.';
+    document.getElementById('resumen-box').style.display = 'none';
+    return;
+  }
+
+  const total = dias * vehiculoActual.precioPorDia;
+  const deposito = dias * (vehiculoActual.depositoPorDia || 100);
+  document.getElementById('r-dias').textContent = dias + ' día(s)';
+  document.getElementById('r-total').textContent = '$' + fmt(total) + ' MXN';
+  document.getElementById('r-deposito').textContent = '$' + fmt(deposito) + ' MXN';
+  document.getElementById('resumen-box').style.display = 'block';
+};
+
+let scrollYGuardado = 0;
+function lockBodyScroll() {
+  scrollYGuardado = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollYGuardado}px`;
+  document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%';
+}
+function unlockBodyScroll() {
+  document.body.style.position = ''; document.body.style.top = '';
+  document.body.style.left = ''; document.body.style.right = ''; document.body.style.width = '';
+  window.scrollTo(0, scrollYGuardado);
+}
+window.closeModal = () => { document.getElementById('modal-overlay').classList.remove('open'); unlockBodyScroll(); };
+window.handleOverlayClick = (e) => { if (e.target.id === 'modal-overlay') closeModal(); };
+
+function generarFolio() { return 'VEH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(); }
+
+function comprimirImagenSiEsNecesario(file) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/') || file.size <= 1.2 * 1024 * 1024) { resolve(file); return; }
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX_LADO = 1600; let { width, height } = img;
+      if (width > height && width > MAX_LADO) { height = height * (MAX_LADO / width); width = MAX_LADO; }
+      else if (height > MAX_LADO) { width = width * (MAX_LADO / height); height = MAX_LADO; }
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.75);
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+window.submitReserva = async () => {
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const whatsapp = document.getElementById('f-whatsapp').value.trim().replace(/[^0-9]/g, '');
+  const inicio = document.getElementById('f-fecha-inicio').value;
+  const fin = document.getElementById('f-fecha-fin').value;
+  const zona = document.getElementById('f-zona').value;
+  const comprobanteErr = document.getElementById('comprobante-err');
+  comprobanteErr.textContent = '';
+
+  if (!name || !email || !whatsapp || !inicio || !fin) { alert('Completa todos los campos antes de continuar.'); return; }
+  if (whatsapp.length < 10) { comprobanteErr.textContent = 'Ingresa un número de WhatsApp válido (10 dígitos).'; return; }
+  if (document.getElementById('resumen-box').style.display === 'none') { comprobanteErr.textContent = 'Revisa las fechas seleccionadas.'; return; }
+
+  const comprobanteFile = document.getElementById('f-comprobante').files[0];
+  if (!comprobanteFile) { comprobanteErr.textContent = 'Sube tu comprobante de transferencia.'; return; }
+
+  const dIni = new Date(inicio + 'T00:00:00');
+  const dFin = new Date(fin + 'T00:00:00');
+  const dias = Math.round((dFin - dIni) / 86400000);
+  const total = dias * vehiculoActual.precioPorDia;
+  const deposito = dias * (vehiculoActual.depositoPorDia || 100);
+  const folio = generarFolio();
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Preparando comprobante...'; btn.disabled = true;
+
+  const comprimido = await comprimirImagenSiEsNecesario(comprobanteFile);
+  if (comprimido.size > 3 * 1024 * 1024) {
+    comprobanteErr.textContent = 'Tu archivo sigue pesando demasiado incluso comprimido.';
+    btn.textContent = 'Confirmar Mi Reserva'; btn.disabled = false; return;
+  }
+
+  btn.textContent = 'Subiendo comprobante...';
+  try {
+    const base64 = await fileToBase64(comprimido);
+    const respSubida = await fetch('/api/subir-comprobante', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folio, nombreArchivo: comprimido.name, contentType: comprimido.type, base64 }),
+    });
+    let resultSubida;
+    try { resultSubida = await respSubida.json(); }
+    catch (e) { throw new Error('El servidor no respondió correctamente (código ' + respSubida.status + ').'); }
+    if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante');
+
+    btn.textContent = 'Guardando reserva...';
+    const ahora = new Date();
+    const expira = new Date(ahora.getTime() + 3 * 60 * 60 * 1000);
+
+    await addDoc(collection(db, 'nexora_vehiculos_reservas'), {
+      folio, vehiculoId: vehiculoActual.id, vehiculoNombre: vehiculoActual.nombre,
+      nombre: name, email, whatsapp, fechaInicio: inicio, fechaFin: fin, dias,
+      zonaEntrega: zona, totalEstimado: total, deposito,
+      comprobanteUrl: resultSubida.url, estado: 'pendiente',
+      expira: expira.toISOString(), creado: serverTimestamp(),
+    });
+
+    // Auto-bloquear las fechas reservadas
+    const fechasArr = [];
+    for (let i = 0; i < dias; i++) { const d = new Date(dIni); d.setDate(d.getDate() + i); fechasArr.push(d.toISOString().split('T')[0]); }
+    await updateDoc(doc(db, 'nexora_vehiculos', vehiculoActual.id), { fechasBloqueadas: arrayUnion(...fechasArr) });
+
+    btn.textContent = 'Enviando confirmación...';
+    try {
+      await fetch('/api/enviar-confirmacion-vehiculo', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          folio, vehiculoNombre: vehiculoActual.nombre, nombre: name, email, whatsapp,
+          fechaInicio: inicio, fechaFin: fin, dias, zonaEntrega: zona,
+          totalEstimado: fmt(total), deposito, comprobanteUrl: resultSubida.url,
+        }),
+      });
+    } catch (e) { console.warn('Error enviando correos:', e); }
+
+    document.getElementById('modal').innerHTML = `
+      <div style="padding:10px 4px">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:52px;margin-bottom:12px">🚗</div>
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:30px;margin-bottom:4px">¡Solicitud enviada!</h3>
+          <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${vehiculoActual.nombre}</p>
+        </div>
+        <div style="background:rgba(11,158,153,0.1);border:1px solid var(--teal);border-radius:10px;padding:14px;text-align:center;margin-bottom:16px">
+          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Tu folio</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--teal-light);letter-spacing:1px">${folio}</div>
+        </div>
+        <div class="alert-warning" style="margin-bottom:16px">Validamos tu comprobante en un máximo de <strong>3 horas</strong>. El resto se paga al recibir el vehículo.</div>
+        <button onclick="closeModal()" class="submit-btn">Cerrar</button>
+      </div>`;
+  } catch (err) {
+    comprobanteErr.textContent = err.message || 'Ocurrió un error. Intenta de nuevo.';
+    btn.textContent = 'Confirmar Mi Reserva'; btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>
