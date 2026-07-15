@@ -42,6 +42,12 @@ button{cursor:pointer;font-family:inherit;}
 .section-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 .top-bar a{color:var(--gray);font-size:12px;text-decoration:none;}
+.tab-btn{background:transparent;border:none;color:var(--gray);padding:12px 18px;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;}
+.tab-btn.active{color:var(--teal-light);border-bottom-color:var(--teal-light);}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
+.cal-day.bloqueado{background:rgba(255,107,107,0.15);border-color:rgba(255,107,107,0.4);color:#ff6b6b;}
+.cal-day.pasado{opacity:.25;cursor:default;}
+.cal-day-label{font-size:10px;color:var(--gray);text-align:center;padding:4px 0;}
 </style>
 </head>
 <body>
@@ -61,9 +67,16 @@ button{cursor:pointer;font-family:inherit;}
 
 <div id="admin-view" class="wrap hidden">
   <div class="top-bar">
-    <h1 style="font-size:26px">✦ Admin de Tours</h1>
+    <h1 style="font-size:26px">✦ Admin</h1>
     <a href="/index-es.html">Ver sitio →</a>
   </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.1)">
+    <button class="tab-btn active" id="tabbtn-tours" onclick="cambiarTab('tours')">🌴 Tours</button>
+    <button class="tab-btn" id="tabbtn-vehiculos" onclick="cambiarTab('vehiculos')">🚗 Vehículos</button>
+  </div>
+
+  <div id="tab-tours">
 
   <div class="card">
     <div class="section-label" id="form-titulo">Agregar tour nuevo</div>
@@ -114,13 +127,79 @@ button{cursor:pointer;font-family:inherit;}
     <div class="section-label">Tours existentes</div>
     <div id="lista-tours">Cargando…</div>
   </div>
+  </div>
+
+  <div id="tab-vehiculos" class="hidden">
+
+    <div class="card">
+      <div class="section-label" id="veh-form-titulo">Agregar vehículo nuevo</div>
+      <label>Nombre / Modelo</label>
+      <input type="text" id="v-nombre" placeholder="ej: Mitsubishi Mirage G4">
+      <label>Descripción (el "por qué")</label>
+      <textarea id="v-descripcion" placeholder="Por qué rentar este vehículo"></textarea>
+      <label>Highlights (separados por comas)</label>
+      <input type="text" id="v-highlights" placeholder="ej: Sin tarjeta de crédito, Seguro incluido, Kilometraje ilimitado">
+      <div class="row2">
+        <div><label>Precio por día (MXN)</label><input type="number" id="v-precio-dia"></div>
+        <div><label>Depósito de reserva por día (MXN)</label><input type="number" id="v-deposito-dia" value="100"></div>
+      </div>
+      <div class="row2">
+        <div><label>Limpieza y entrega (MXN)</label><input type="number" id="v-limpieza"></div>
+        <div><label>Depósito en garantía (MXN)</label><input type="number" id="v-deposito-garantia"></div>
+      </div>
+      <label>Mínimo de días de renta</label>
+      <input type="number" id="v-min-dias" value="3">
+      <label>Zonas de entrega incluidas (separadas por comas)</label>
+      <input type="text" id="v-zonas-incluidas" placeholder="ej: Aeropuerto Cancún, Zona Centro, Zona Hotelera">
+      <label>Zonas con costo extra (separadas por comas)</label>
+      <input type="text" id="v-zonas-costo" placeholder="ej: Playa del Carmen, Tulum, Puerto Juárez">
+      <label>Políticas completas</label>
+      <textarea id="v-politicas" style="min-height:120px" placeholder="Todas las políticas de renta, una por línea"></textarea>
+
+      <label>Imágenes (puedes subir varias)</label>
+      <input type="file" id="v-imagenes" accept="image/*" multiple onchange="previewImagenesVehiculo(this)">
+      <div class="img-preview" id="veh-img-preview"></div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+        <input type="checkbox" id="v-activo" checked style="width:auto">
+        <label style="margin:0">Visible en el sitio</label>
+      </div>
+
+      <button class="btn" id="btn-guardar-vehiculo" onclick="guardarVehiculo()">Guardar Vehículo</button>
+      <button class="btn btn-secondary" id="btn-cancelar-vehiculo" onclick="cancelarEdicionVehiculo()" style="display:none">Cancelar edición</button>
+      <div class="err" id="veh-form-err"></div>
+      <div class="ok" id="veh-form-ok"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Vehículos existentes</div>
+      <div id="lista-vehiculos">Cargando…</div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Calendario de disponibilidad</div>
+      <div class="sub" style="margin-bottom:14px">Selecciona el vehículo y toca un día para bloquearlo/desbloquearlo. Las reservas hechas por Nexora se bloquean solas.</div>
+      <select id="cal-vehiculo-select" onchange="cargarCalendario()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:inherit;font-size:14px;margin-bottom:16px"></select>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <button class="btn-secondary btn" style="width:auto;margin:0;padding:8px 14px" onclick="cambiarMesCalendario(-1)">←</button>
+        <div id="cal-mes-label" style="font-weight:700"></div>
+        <button class="btn-secondary btn" style="width:auto;margin:0;padding:8px 14px" onclick="cambiarMesCalendario(1)">→</button>
+      </div>
+      <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+      <div style="display:flex;gap:16px;margin-top:14px;font-size:11px;color:var(--gray)">
+        <span>⬜ Disponible</span>
+        <span>🟥 Bloqueado</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, query, orderBy, updateDoc }
+import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, query, orderBy, updateDoc, arrayUnion, arrayRemove }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createClient as createSupabaseClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
@@ -158,6 +237,14 @@ window.hacerLogin = async () => {
   }
 };
 
+window.cambiarTab = (tab) => {
+  document.getElementById('tab-tours').classList.toggle('hidden', tab !== 'tours');
+  document.getElementById('tab-vehiculos').classList.toggle('hidden', tab !== 'vehiculos');
+  document.getElementById('tabbtn-tours').classList.toggle('active', tab === 'tours');
+  document.getElementById('tabbtn-vehiculos').classList.toggle('active', tab === 'vehiculos');
+  if (tab === 'vehiculos') cargarVehiculos();
+};
+
 onAuthStateChanged(auth, (user) => {
   if (user && user.email === ADMIN_EMAIL) {
     document.getElementById('login-view').classList.add('hidden');
@@ -188,21 +275,33 @@ function renderPreview() {
 window.quitarExistente = (i) => { imagenesExistentes.splice(i, 1); renderPreview(); };
 window.quitarNueva = (i) => { imagenesSeleccionadas.splice(i, 1); renderPreview(); };
 
-async function subirImagenesSupabase(tourId) {
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function subirImagenesViaEndpoint(files, carpeta) {
   const urls = [];
-  for (const file of imagenesSeleccionadas) {
-    const nombreLimpio = file.name
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const path = `tours/${tourId}/${Date.now()}_${nombreLimpio}`;
-    const { error } = await supabase.storage.from('comprobantes').upload(path, file, {
-      contentType: file.type || 'image/jpeg',
+  for (const file of files) {
+    const base64 = await fileToBase64(file);
+    const resp = await fetch('/api/subir-comprobante', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carpeta, nombreArchivo: file.name, contentType: file.type, base64 }),
     });
-    if (error) throw new Error('Error subiendo imagen: ' + error.message);
-    const { data } = supabase.storage.from('comprobantes').getPublicUrl(path);
-    urls.push(data.publicUrl);
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.error || 'Error subiendo imagen');
+    urls.push(result.url);
   }
   return urls;
+}
+
+async function subirImagenesSupabase(tourId) {
+  return subirImagenesViaEndpoint(imagenesSeleccionadas, `tours/${tourId}`);
 }
 
 window.guardarTour = async () => {
@@ -318,6 +417,201 @@ window.borrarTour = async (id) => {
   if (!confirm('¿Seguro que quieres borrar este tour? No se puede deshacer.')) return;
   await deleteDoc(doc(db, 'nexora_tours', id));
   cargarTours();
+};
+
+// ════════════════════════════════════════
+// VEHÍCULOS EN RENTA
+// ════════════════════════════════════════
+let imagenesVehSeleccionadas = [];
+let imagenesVehExistentes = [];
+let vehiculoEditandoId = null;
+let vehiculosCache = [];
+
+window.previewImagenesVehiculo = (input) => {
+  imagenesVehSeleccionadas = Array.from(input.files);
+  renderPreviewVehiculo();
+};
+function renderPreviewVehiculo() {
+  const box = document.getElementById('veh-img-preview');
+  let html = '';
+  imagenesVehExistentes.forEach((url, i) => {
+    html += `<div><img src="${url}"><button class="rm" onclick="quitarExistenteVehiculo(${i})">✕</button></div>`;
+  });
+  imagenesVehSeleccionadas.forEach((file, i) => {
+    html += `<div><img src="${URL.createObjectURL(file)}"><button class="rm" onclick="quitarNuevaVehiculo(${i})">✕</button></div>`;
+  });
+  box.innerHTML = html;
+}
+window.quitarExistenteVehiculo = (i) => { imagenesVehExistentes.splice(i, 1); renderPreviewVehiculo(); };
+window.quitarNuevaVehiculo = (i) => { imagenesVehSeleccionadas.splice(i, 1); renderPreviewVehiculo(); };
+
+window.guardarVehiculo = async () => {
+  const errEl = document.getElementById('veh-form-err');
+  const okEl  = document.getElementById('veh-form-ok');
+  errEl.textContent = ''; okEl.textContent = '';
+
+  const nombre = document.getElementById('v-nombre').value.trim();
+  if (!nombre) { errEl.textContent = 'El nombre del vehículo es obligatorio.'; return; }
+
+  const btn = document.getElementById('btn-guardar-vehiculo');
+  btn.textContent = 'Guardando...'; btn.disabled = true;
+
+  try {
+    const vehId = vehiculoEditandoId || doc(collection(db, 'nexora_vehiculos')).id;
+    const nuevasUrls = await subirImagenesViaEndpoint(imagenesVehSeleccionadas, `vehiculos/${vehId}`);
+    const imagenes = [...imagenesVehExistentes, ...nuevasUrls];
+
+    const data = {
+      nombre,
+      descripcion: document.getElementById('v-descripcion').value.trim(),
+      highlights: document.getElementById('v-highlights').value.split(',').map(s => s.trim()).filter(Boolean),
+      precioPorDia: Number(document.getElementById('v-precio-dia').value) || 0,
+      depositoPorDia: Number(document.getElementById('v-deposito-dia').value) || 100,
+      limpiezaEntrega: Number(document.getElementById('v-limpieza').value) || 0,
+      depositoGarantia: Number(document.getElementById('v-deposito-garantia').value) || 0,
+      minDias: Number(document.getElementById('v-min-dias').value) || 1,
+      zonasIncluidas: document.getElementById('v-zonas-incluidas').value.split(',').map(s => s.trim()).filter(Boolean),
+      zonasConCosto: document.getElementById('v-zonas-costo').value.split(',').map(s => s.trim()).filter(Boolean),
+      politicas: document.getElementById('v-politicas').value.trim(),
+      imagenes,
+      activo: document.getElementById('v-activo').checked,
+      fechasBloqueadas: vehiculoEditandoId ? undefined : [],
+    };
+    Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
+
+    await setDoc(doc(db, 'nexora_vehiculos', vehId), data, { merge: true });
+    okEl.textContent = '✓ Vehículo guardado correctamente.';
+    limpiarFormularioVehiculo();
+    cargarVehiculos();
+  } catch (e) {
+    errEl.textContent = e.message || 'Error al guardar.';
+  } finally {
+    btn.textContent = 'Guardar Vehículo'; btn.disabled = false;
+  }
+};
+
+function limpiarFormularioVehiculo() {
+  ['v-nombre','v-descripcion','v-highlights','v-precio-dia','v-limpieza','v-deposito-garantia','v-zonas-incluidas','v-zonas-costo','v-politicas'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('v-deposito-dia').value = '100';
+  document.getElementById('v-min-dias').value = '3';
+  document.getElementById('v-activo').checked = true;
+  document.getElementById('v-imagenes').value = '';
+  imagenesVehSeleccionadas = []; imagenesVehExistentes = []; vehiculoEditandoId = null;
+  renderPreviewVehiculo();
+  document.getElementById('veh-form-titulo').textContent = 'Agregar vehículo nuevo';
+  document.getElementById('btn-cancelar-vehiculo').style.display = 'none';
+}
+window.cancelarEdicionVehiculo = limpiarFormularioVehiculo;
+
+async function cargarVehiculos() {
+  const box = document.getElementById('lista-vehiculos');
+  const snap = await getDocs(collection(db, 'nexora_vehiculos'));
+  vehiculosCache = [];
+  snap.forEach(d => vehiculosCache.push({ id: d.id, ...d.data() }));
+
+  if (!vehiculosCache.length) { box.innerHTML = '<div style="color:var(--gray);font-size:13px">Aún no hay vehículos cargados.</div>'; }
+  else {
+    let html = '';
+    vehiculosCache.forEach(v => {
+      const img = (v.imagenes && v.imagenes[0]) || '';
+      html += `<div class="tour-row">
+        <img src="${img}" onerror="this.style.display='none'">
+        <div class="info">
+          <div class="name">${v.nombre}</div>
+          <div class="meta">$${v.precioPorDia || 0}/día · <span class="${v.activo !== false ? 'badge-activo' : 'badge-inactivo'}">${v.activo !== false ? 'Visible' : 'Oculto'}</span></div>
+        </div>
+        <div class="acts">
+          <button onclick="editarVehiculo('${v.id}')">Editar</button>
+          <button onclick="borrarVehiculo('${v.id}')">Borrar</button>
+        </div>
+      </div>`;
+    });
+    box.innerHTML = html;
+  }
+
+  // refrescar el selector del calendario
+  const sel = document.getElementById('cal-vehiculo-select');
+  const valorPrevio = sel.value;
+  sel.innerHTML = vehiculosCache.map(v => `<option value="${v.id}">${v.nombre}</option>`).join('');
+  if (vehiculosCache.some(v => v.id === valorPrevio)) sel.value = valorPrevio;
+  if (vehiculosCache.length) cargarCalendario();
+}
+
+window.editarVehiculo = (id) => {
+  const v = vehiculosCache.find(x => x.id === id);
+  if (!v) return;
+  vehiculoEditandoId = id;
+  document.getElementById('v-nombre').value = v.nombre || '';
+  document.getElementById('v-descripcion').value = v.descripcion || '';
+  document.getElementById('v-highlights').value = (v.highlights || []).join(', ');
+  document.getElementById('v-precio-dia').value = v.precioPorDia || '';
+  document.getElementById('v-deposito-dia').value = v.depositoPorDia || 100;
+  document.getElementById('v-limpieza').value = v.limpiezaEntrega || '';
+  document.getElementById('v-deposito-garantia').value = v.depositoGarantia || '';
+  document.getElementById('v-min-dias').value = v.minDias || 3;
+  document.getElementById('v-zonas-incluidas').value = (v.zonasIncluidas || []).join(', ');
+  document.getElementById('v-zonas-costo').value = (v.zonasConCosto || []).join(', ');
+  document.getElementById('v-politicas').value = v.politicas || '';
+  document.getElementById('v-activo').checked = v.activo !== false;
+  imagenesVehExistentes = v.imagenes || [];
+  imagenesVehSeleccionadas = [];
+  renderPreviewVehiculo();
+  document.getElementById('veh-form-titulo').textContent = 'Editando: ' + v.nombre;
+  document.getElementById('btn-cancelar-vehiculo').style.display = 'block';
+  window.scrollTo(0, 0);
+};
+
+window.borrarVehiculo = async (id) => {
+  if (!confirm('¿Seguro que quieres borrar este vehículo? No se puede deshacer.')) return;
+  await deleteDoc(doc(db, 'nexora_vehiculos', id));
+  cargarVehiculos();
+};
+
+// ── Calendario de disponibilidad ──
+let calMesActual = new Date(); calMesActual.setDate(1);
+
+window.cambiarMesCalendario = (delta) => {
+  calMesActual.setMonth(calMesActual.getMonth() + delta);
+  renderCalendario();
+};
+
+window.cargarCalendario = () => renderCalendario();
+
+function renderCalendario() {
+  const vehId = document.getElementById('cal-vehiculo-select').value;
+  const v = vehiculosCache.find(x => x.id === vehId);
+  const bloqueadas = new Set((v && v.fechasBloqueadas) || []);
+
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-mes-label').textContent = `${meses[calMesActual.getMonth()]} ${calMesActual.getFullYear()}`;
+
+  const primerDia = new Date(calMesActual.getFullYear(), calMesActual.getMonth(), 1);
+  const diasEnMes = new Date(calMesActual.getFullYear(), calMesActual.getMonth() + 1, 0).getDate();
+  const offset = primerDia.getDay();
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+  let html = ['D','L','M','M','J','V','S'].map(d => `<div class="cal-day-label">${d}</div>`).join('');
+  for (let i = 0; i < offset; i++) html += '<div></div>';
+  for (let dia = 1; dia <= diasEnMes; dia++) {
+    const fecha = new Date(calMesActual.getFullYear(), calMesActual.getMonth(), dia);
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const esPasado = fecha < hoy;
+    const bloqueado = bloqueadas.has(fechaStr);
+    html += `<div class="cal-day ${bloqueado ? 'bloqueado' : ''} ${esPasado ? 'pasado' : ''}" ${esPasado ? '' : `onclick="toggleFechaBloqueada('${vehId}','${fechaStr}',${bloqueado})"`}>${dia}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+window.toggleFechaBloqueada = async (vehId, fechaStr, estaBloqueada) => {
+  await updateDoc(doc(db, 'nexora_vehiculos', vehId), {
+    fechasBloqueadas: estaBloqueada ? arrayRemove(fechaStr) : arrayUnion(fechaStr),
+  });
+  const v = vehiculosCache.find(x => x.id === vehId);
+  if (v) {
+    if (estaBloqueada) v.fechasBloqueadas = (v.fechasBloqueadas || []).filter(f => f !== fechaStr);
+    else v.fechasBloqueadas = [...(v.fechasBloqueadas || []), fechaStr];
+  }
+  renderCalendario();
 };
 </script>
 </body>
