@@ -108,6 +108,7 @@ details summary::-webkit-details-marker{display:none}
 .dep-detail{color:var(--gray);font-size:11px;margin-top:4px}
 .form-group{margin-bottom:14px}
 .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.err{color:#ff6b6b;font-size:12px;min-height:14px}
 .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'Barlow',sans-serif;font-size:16px;transition:border-color .2s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--teal)}
 .form-group select option{background:var(--navy-mid)}
@@ -141,6 +142,10 @@ footer p{color:var(--gray);font-size:12px}
   .form-row{grid-template-columns:1fr}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+<script>
+  (function(){ try{ emailjs.init({ publicKey: 'JXK1Ore40Bq7ub5ZV' }); }catch(e){} })();
+</script>
 </head>
 <body>
 
@@ -258,7 +263,13 @@ footer p{color:var(--gray);font-size:12px}
         <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Tarjeta</span><strong style="letter-spacing:.06em;color:var(--gold)">4152 3141 9214 8651</strong></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--gray)">Referencia</span><strong style="color:var(--gold)">Tu nombre completo</strong></div>
       </div>
-      <div class="alert-warning" style="margin-top:10px;margin-bottom:0">Después de transferir, envía tu comprobante por WhatsApp para confirmar tu lugar en menos de 24 horas.</div>
+      <div class="alert-warning" style="margin-top:10px;margin-bottom:0">Sube tu comprobante abajo — validamos tu anticipo en un máximo de 3 horas.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Comprobante de transferencia</label>
+      <input type="file" id="f-comprobante" accept="image/*,.pdf">
+      <div class="err" id="comprobante-err" style="margin-top:6px"></div>
     </div>
 
     <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Confirmar Mi Reserva</button>
@@ -360,6 +371,23 @@ function closeModal() {
 
 function handleOverlayClick(e) { if (e.target.id === 'modal-overlay') closeModal(); }
 
+const EMAILJS_SERVICE_ADMIN   = 'service_x77bs5j';
+const EMAILJS_TEMPLATE_ADMIN  = 'template_dgqr9ec'; // reusado del club, mismo destinatario admin
+const EMAILJS_TEMPLATE_CLIENTE = 'PENDIENTE_CONFIGURAR'; // se actualiza cuando esté la plantilla nueva
+
+function generarFolio() {
+  return 'TUR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 async function submitBooking() {
   const name   = document.getElementById('f-name').value.trim();
   const email  = document.getElementById('f-email').value.trim();
@@ -367,37 +395,109 @@ async function submitBooking() {
   const hotel  = document.getElementById('f-hotel').value.trim();
   const adults = parseInt(document.getElementById('f-adults').value) || 1;
   const kids   = parseInt(document.getElementById('f-children').value) || 0;
+  const comprobanteInput = document.getElementById('f-comprobante');
+  const comprobanteFile = comprobanteInput.files[0];
+  const comprobanteErr = document.getElementById('comprobante-err');
+  comprobanteErr.textContent = '';
+
   if (!name || !email || !date || !hotel) {
     alert('Por favor completa todos los campos antes de continuar.');
     return;
   }
+  if (!comprobanteFile) {
+    comprobanteErr.textContent = 'Sube tu comprobante de transferencia para continuar.';
+    return;
+  }
+  if (comprobanteFile.size > 8 * 1024 * 1024) {
+    comprobanteErr.textContent = 'El archivo pesa más de 8MB, sube uno más ligero.';
+    return;
+  }
+
   const p        = PRICES[currentTour][currentNac];
   const totalMXN = (adults * p.adult) + (kids * p.kid);
   const balance  = totalMXN - DEPOSIT;
   const tourLabel = document.getElementById('modal-tour-name').textContent;
   const guests = adults + ' adulto(s)' + (kids > 0 ? ', ' + kids + ' menor(es)' : '');
+  const folio = generarFolio();
 
-  const mensajeWA = `Hola, quiero confirmar mi reserva:\n\nTour: ${tourLabel}\nNombre: ${name}\nCorreo: ${email}\nFecha: ${date}\nHotel/Pick-up: ${hotel}\nPersonas: ${guests}\nTotal: $${fmt(totalMXN)} MXN\nAnticipo: $${DEPOSIT} MXN (transferencia)\nSaldo al abordar: $${fmt(balance)} MXN\n\nAdjunto mi comprobante de transferencia.`;
-  window.open(`https://wa.me/${WA_NEXORA}?text=${encodeURIComponent(mensajeWA)}`, '_blank');
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Subiendo comprobante...';
+  btn.disabled = true;
 
-  document.getElementById('modal').innerHTML = `
-    <div style="padding:32px 20px">
-      <div style="text-align:center;margin-bottom:24px">
-        <div style="font-size:52px;margin-bottom:12px">📋</div>
-        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:34px;margin-bottom:4px">¡Solicitud enviada!</h3>
-        <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${tourLabel}</p>
-      </div>
-      <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;">
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Nombre</span><strong>${name}</strong></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Fecha</span><strong>${date}</strong></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Personas</span><strong>${guests}</strong></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Total del tour</span><strong>$${fmt(totalMXN)} MXN</strong></div>
-      </div>
-      <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;line-height:1.6">
-        Se abrió WhatsApp con tu reserva. Envía ahí tu <strong>comprobante de transferencia</strong> ($${DEPOSIT} MXN) para confirmar tu lugar — y no olvides <strong>$${fmt(balance)} MXN en efectivo</strong> el día del tour.
-      </div>
-      <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Cerrar</button>
-    </div>`;
+  try {
+    const base64 = await fileToBase64(comprobanteFile);
+    const respSubida = await fetch('/api/subir-comprobante', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folio, nombreArchivo: comprobanteFile.name, contentType: comprobanteFile.type, base64 }),
+    });
+    const resultSubida = await respSubida.json();
+    if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante');
+
+    btn.textContent = 'Guardando reserva...';
+
+    const ahora = new Date();
+    const expira = new Date(ahora.getTime() + 3 * 60 * 60 * 1000); // 3 horas
+
+    await window.crearReservaFirestore({
+      folio, tourId: currentTour, tourNombre: tourLabel,
+      nombre: name, email, hotel, fecha: date,
+      adultos: adults, menores: kids,
+      totalMXN, deposito: DEPOSIT, saldo: balance,
+      comprobanteUrl: resultSubida.url,
+      estado: 'pendiente',
+      expira: expira.toISOString(),
+    });
+
+    // Aviso al admin (reusa la plantilla del club, mapeando los campos a este contexto)
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ADMIN, EMAILJS_TEMPLATE_ADMIN, {
+        nombre: name, email, telefono: hotel,
+        plan: 'TOUR: ' + tourLabel,
+        ciudad: guests,
+        folio, fecha_firma: date,
+        metodo_pago: `Transferencia — anticipo $${DEPOSIT} MXN — comprobante: ${resultSubida.url}`,
+      });
+    } catch (e) { console.warn('EmailJS admin:', e); }
+
+    // Confirmación al cliente (plantilla dedicada — se activa en cuanto esté configurada)
+    if (EMAILJS_TEMPLATE_CLIENTE !== 'PENDIENTE_CONFIGURAR') {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ADMIN, EMAILJS_TEMPLATE_CLIENTE, {
+          to_name: name, to_email: email, tour: tourLabel, fecha: date,
+          personas: guests, total: `$${fmt(totalMXN)} MXN`,
+          anticipo: `$${DEPOSIT} MXN`, folio,
+        });
+      } catch (e) { console.warn('EmailJS cliente:', e); }
+    }
+
+    document.getElementById('modal').innerHTML = `
+      <div style="padding:32px 20px">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:52px;margin-bottom:12px">📋</div>
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:34px;margin-bottom:4px">¡Solicitud enviada!</h3>
+          <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${tourLabel}</p>
+        </div>
+        <div style="background:rgba(11,158,153,0.1);border:1px solid var(--teal);border-radius:10px;padding:14px;text-align:center;margin-bottom:16px">
+          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Tu folio</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--teal-light);letter-spacing:1px">${folio}</div>
+        </div>
+        <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Nombre</span><strong>${name}</strong></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Fecha</span><strong>${date}</strong></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:var(--gray)">Personas</span><strong>${guests}</strong></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Total del tour</span><strong>$${fmt(totalMXN)} MXN</strong></div>
+        </div>
+        <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;line-height:1.6">
+          Validamos tu comprobante en un máximo de <strong>3 horas</strong>. Guarda tu folio — y no olvides <strong>$${fmt(balance)} MXN en efectivo</strong> el día del tour.
+        </div>
+        <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Cerrar</button>
+      </div>`;
+  } catch (err) {
+    comprobanteErr.textContent = err.message || 'Ocurrió un error. Intenta de nuevo.';
+    btn.textContent = 'Confirmar Mi Reserva';
+    btn.disabled = false;
+  }
 }
 
 // ════════════════════════════════════════
@@ -485,7 +585,7 @@ aplicarFadeIn('.step');
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy }
+import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -498,6 +598,14 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+
+window.crearReservaFirestore = async function(datos) {
+  const ref = await addDoc(collection(db, 'nexora_tours_reservas'), {
+    ...datos,
+    creado: serverTimestamp(),
+  });
+  return ref.id;
+};
 
 try {
   const snap = await getDocs(query(collection(db, 'nexora_tours'), orderBy('orden')));
