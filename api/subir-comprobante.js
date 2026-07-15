@@ -15,8 +15,8 @@ export default async function handler(req, res) {
 
   try {
     const buffer = Buffer.from(base64, 'base64');
-    if (buffer.length > 8 * 1024 * 1024) {
-      return res.status(400).json({ error: 'El archivo pesa más de 8MB' });
+    if (buffer.length > 3 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El archivo pesa más de 3MB' });
     }
     const nombreLimpio = nombreArchivo
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
