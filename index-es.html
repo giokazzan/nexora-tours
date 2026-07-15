@@ -112,6 +112,15 @@ details summary::-webkit-details-marker{display:none}
 .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'Barlow',sans-serif;font-size:16px;transition:border-color .2s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--teal)}
 .form-group select option{background:var(--navy-mid);color:var(--white)}
+.lada-select{position:relative;}
+.lada-btn{width:100%;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 10px;color:var(--white);font-family:inherit;font-size:14px;cursor:pointer;}
+.lada-btn img{width:20px;height:15px;object-fit:cover;border-radius:2px;flex-shrink:0;}
+.lada-arrow{margin-left:auto;font-size:10px;color:var(--gray);}
+.lada-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--navy-mid);border:1px solid rgba(255,255,255,0.15);border-radius:8px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+.lada-dropdown.open{display:block;}
+.lada-item{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:14px;color:var(--white);}
+.lada-item:hover{background:rgba(255,255,255,0.06);}
+.lada-item img{width:20px;height:15px;object-fit:cover;border-radius:2px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .stripe-box{background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:18px;text-align:center;margin-bottom:14px}
 .stripe-box p{color:var(--gray);font-size:13px}
@@ -253,23 +262,15 @@ footer p{color:var(--gray);font-size:12px}
     <div class="form-group">
       <label>WhatsApp de contacto</label>
       <div style="display:grid;grid-template-columns:130px 1fr;gap:8px">
-        <select id="f-whatsapp-lada">
-          <option value="52">MX +52</option>
-          <option value="1">US +1</option>
-          <option value="1">CA +1</option>
-          <option value="34">ES +34</option>
-          <option value="54">AR +54</option>
-          <option value="57">CO +57</option>
-          <option value="51">PE +51</option>
-          <option value="56">CL +56</option>
-          <option value="593">EC +593</option>
-          <option value="58">VE +58</option>
-          <option value="55">BR +55</option>
-          <option value="44">GB +44</option>
-          <option value="33">FR +33</option>
-          <option value="49">DE +49</option>
-          <option value="39">IT +39</option>
-        </select>
+        <div class="lada-select" id="lada-select-tour">
+          <button type="button" class="lada-btn" onclick="toggleLadaDropdown('lada-select-tour')">
+            <img id="lada-flag-tour" src="https://flagcdn.com/20x15/mx.png" alt="">
+            <span id="lada-code-tour">MX +52</span>
+            <span class="lada-arrow">▾</span>
+          </button>
+          <div class="lada-dropdown" id="lada-dropdown-tour"></div>
+        </div>
+        <input type="hidden" id="f-whatsapp-lada" value="52">
         <input type="tel" placeholder="Tu número, sin lada" id="f-whatsapp-numero">
       </div>
     </div>
@@ -389,6 +390,48 @@ function closeModal() {
 }
 
 function handleOverlayClick(e) { if (e.target.id === 'modal-overlay') closeModal(); }
+
+const PAISES_LADA = [
+  { iso: 'mx', code: '52', label: 'MX +52' },
+  { iso: 'us', code: '1', label: 'US +1' },
+  { iso: 'ca', code: '1', label: 'CA +1' },
+  { iso: 'es', code: '34', label: 'ES +34' },
+  { iso: 'ar', code: '54', label: 'AR +54' },
+  { iso: 'co', code: '57', label: 'CO +57' },
+  { iso: 'pe', code: '51', label: 'PE +51' },
+  { iso: 'cl', code: '56', label: 'CL +56' },
+  { iso: 'ec', code: '593', label: 'EC +593' },
+  { iso: 've', code: '58', label: 'VE +58' },
+  { iso: 'br', code: '55', label: 'BR +55' },
+  { iso: 'gb', code: '44', label: 'GB +44' },
+  { iso: 'fr', code: '33', label: 'FR +33' },
+  { iso: 'de', code: '49', label: 'DE +49' },
+  { iso: 'it', code: '39', label: 'IT +39' },
+];
+
+function initLadaSelector(sufijo) {
+  const dropdown = document.getElementById('lada-dropdown-' + sufijo);
+  if (!dropdown) return;
+  dropdown.innerHTML = PAISES_LADA.map(p =>
+    `<div class="lada-item" onclick="seleccionarLada('${sufijo}','${p.iso}','${p.code}','${p.label}')"><img src="https://flagcdn.com/20x15/${p.iso}.png" alt=""> ${p.label}</div>`
+  ).join('');
+}
+window.toggleLadaDropdown = (sufijo) => {
+  document.querySelectorAll('.lada-dropdown').forEach(d => { if (d.id !== 'lada-dropdown-' + sufijo) d.classList.remove('open'); });
+  document.getElementById('lada-dropdown-' + sufijo).classList.toggle('open');
+};
+window.seleccionarLada = (sufijo, iso, code, label) => {
+  document.getElementById('lada-flag-' + sufijo).src = `https://flagcdn.com/20x15/${iso}.png`;
+  document.getElementById('lada-code-' + sufijo).textContent = label;
+  document.getElementById('f-whatsapp-lada').value = code;
+  document.getElementById('lada-dropdown-' + sufijo).classList.remove('open');
+};
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lada-select')) {
+    document.querySelectorAll('.lada-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+initLadaSelector('tour');
 
 function generarFolio() {
   return 'TUR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
