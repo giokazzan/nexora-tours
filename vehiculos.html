@@ -169,7 +169,7 @@ details.politicas .pol-item{padding:5px 0;border-bottom:1px solid rgba(255,255,2
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, doc, addDoc, updateDoc, arrayUnion, serverTimestamp, getDoc }
+import { getFirestore, collection, getDocs, query, orderBy, doc, addDoc, setDoc, updateDoc, arrayUnion, serverTimestamp, getDoc }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -462,13 +462,14 @@ window.submitReserva = async () => {
     const ahora = new Date();
     const expira = new Date(ahora.getTime() + 3 * 60 * 60 * 1000);
 
-    await addDoc(collection(db, 'nexora_vehiculos_reservas'), {
+    const refCreada = await addDoc(collection(db, 'nexora_vehiculos_reservas'), {
       folio, vehiculoId: vehiculoActual.id, vehiculoNombre: vehiculoActual.nombre,
       nombre: name, email, whatsapp, fechaInicio: inicio, fechaFin: fin, dias,
       zonaEntrega: zona, totalEstimado: total, deposito,
       comprobanteUrl: resultSubida.url, estado: 'pendiente',
       expira: expira.toISOString(), creado: serverTimestamp(),
     });
+    try { await setDoc(doc(db, 'reservas_index', folio), { coleccion: 'nexora_vehiculos_reservas', docId: refCreada.id }); } catch (e) {}
 
     // Auto-bloquear las fechas reservadas
     const fechasArr = [];
