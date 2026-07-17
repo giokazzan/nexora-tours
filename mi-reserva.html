@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mi Reserva — Nexora</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+:root{--navy:#071a26;--navy-mid:#0d2d3f;--teal:#0b9e99;--teal-light:#3ecfc4;--gold:#f5c842;--white:#fff;--gray:#8ab2b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--navy);color:var(--white);min-height:100svh;display:flex;flex-direction:column;align-items:center;padding:60px 20px;}
+.logo{font-family:'Bebas Neue',Arial,sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:6px;}
+.logo span{color:var(--gold);}
+.tagline{font-size:11px;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;margin-bottom:40px;}
+
+.card{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.25);border-radius:16px;padding:32px;max-width:440px;width:100%;}
+h1{font-family:'Bebas Neue',Arial,sans-serif;font-size:28px;margin-bottom:8px;}
+p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
+
+.form-group input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:13px 16px;color:var(--white);font-size:16px;font-family:inherit;text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.form-group input::placeholder{text-transform:none;letter-spacing:normal;color:#5a7a86;}
+.btn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:14px;}
+.btn:disabled{opacity:.6;cursor:default;}
+.err{color:#ff6b6b;font-size:13px;margin-top:12px;text-align:center;}
+
+.resultado{margin-top:24px;}
+.badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.badge.pendiente{background:rgba(245,200,66,0.15);color:var(--gold);border:1px solid rgba(245,200,66,0.4);}
+.badge.confirmada{background:rgba(93,207,142,0.15);color:#5dcf8e;border:1px solid rgba(93,207,142,0.4);}
+.badge.rechazada{background:rgba(255,107,107,0.15);color:#ff6b6b;border:1px solid rgba(255,107,107,0.4);}
+
+.res-titulo{font-family:'Bebas Neue',Arial,sans-serif;font-size:22px;margin:14px 0 4px;}
+.res-linea{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.res-linea span:first-child{color:var(--gray);}
+
+.mensaje-estado{margin-top:18px;padding:14px;border-radius:10px;font-size:.85rem;line-height:1.5;}
+.mensaje-estado.pendiente{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);color:#f5c842;}
+.mensaje-estado.confirmada{background:rgba(93,207,142,0.08);border:1px solid rgba(93,207,142,0.25);color:#5dcf8e;}
+.mensaje-estado.rechazada{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);color:#ff9b9b;}
+
+.soporte{margin-top:20px;text-align:center;font-size:.78rem;color:var(--gray);}
+.soporte a{color:var(--teal-light);font-weight:600;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="logo">N<span>EX</span>ORA</div>
+<div class="tagline">Privileged Access</div>
+
+<div class="card">
+  <h1>¿Cómo va tu reserva?</h1>
+  <p class="sub">Escribe el folio que te dimos al confirmar tu reserva de tour o vehículo.</p>
+
+  <div class="form-group">
+    <input type="text" id="f-folio" placeholder="Ej: TUR-ABC123-XYZ9" onkeydown="if(event.key==='Enter')buscarReserva()">
+  </div>
+  <button class="btn" id="btn-buscar" onclick="buscarReserva()">Buscar mi reserva</button>
+  <div class="err" id="err-msg"></div>
+
+  <div class="resultado" id="resultado" style="display:none"></div>
+</div>
+
+<div class="soporte">¿No encuentras tu folio? <a href="https://wa.me/529982168410?text=Hola%2C%20necesito%20ayuda%20para%20encontrar%20mi%20folio%20de%20reserva">Escríbenos por WhatsApp</a></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJR13NWfWBURGZZtUhzA0OVjm3nSxCR28",
+  authDomain: "nexora-club.firebaseapp.com",
+  projectId: "nexora-club",
+  storageBucket: "nexora-club.firebasestorage.app",
+  messagingSenderId: "651071612444",
+  appId: "1:651071612444:web:86bb7b36b1446220e661d9"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function fmt(n) { return (n || 0).toLocaleString('es-MX'); }
+
+const MENSAJES = {
+  pendiente: '⏳ Estamos validando tu comprobante. Normalmente tarda hasta 3 horas — si ya pasó ese tiempo, escríbenos por WhatsApp.',
+  confirmada: '✅ ¡Tu reserva está confirmada! Nos vemos pronto.',
+  rechazada: '⚠️ Hubo un problema validando tu comprobante. Escríbenos por WhatsApp para resolverlo.',
+};
+
+window.buscarReserva = async () => {
+  const folioInput = document.getElementById('f-folio');
+  const folio = folioInput.value.trim().toUpperCase();
+  const errEl = document.getElementById('err-msg');
+  const resultadoEl = document.getElementById('resultado');
+  const btn = document.getElementById('btn-buscar');
+  errEl.textContent = '';
+  resultadoEl.style.display = 'none';
+
+  if (!folio) { errEl.textContent = 'Escribe tu folio antes de buscar.'; return; }
+
+  btn.disabled = true; btn.textContent = 'Buscando...';
+  try {
+    const indexSnap = await getDoc(doc(db, 'reservas_index', folio));
+    if (!indexSnap.exists()) {
+      errEl.textContent = 'No encontramos ese folio. Revisa que esté bien escrito, o contáctanos si sigue sin aparecer.';
+      return;
+    }
+    const { coleccion, docId } = indexSnap.data();
+    const resSnap = await getDoc(doc(db, coleccion, docId));
+    if (!resSnap.exists()) {
+      errEl.textContent = 'No pudimos encontrar los detalles de esta reserva. Contáctanos por WhatsApp.';
+      return;
+    }
+
+    const r = resSnap.data();
+    const esTour = coleccion === 'nexora_tours_reservas';
+    const nombreProducto = esTour ? r.tourNombre : r.vehiculoNombre;
+    const fechaTexto = esTour ? r.fecha : `${r.fechaInicio} → ${r.fechaFin}`;
+    const totalTexto = esTour ? r.totalMXN : r.totalEstimado;
+    const estado = r.estado || 'pendiente';
+
+    resultadoEl.innerHTML = `
+      <span class="badge ${estado}">${estado}</span>
+      <div class="res-titulo">${esTour ? '🌴' : '🚗'} ${nombreProducto}</div>
+      <div class="res-linea"><span>Folio</span><strong>${folio}</strong></div>
+      <div class="res-linea"><span>Fecha</span><strong>${fechaTexto}</strong></div>
+      <div class="res-linea"><span>Total</span><strong>$${fmt(totalTexto)} MXN</strong></div>
+      <div class="res-linea"><span>Anticipo</span><strong>$${fmt(r.deposito)} MXN</strong></div>
+      <div class="mensaje-estado ${estado}">${MENSAJES[estado] || ''}</div>
+    `;
+    resultadoEl.style.display = 'block';
+  } catch (e) {
+    errEl.textContent = 'Ocurrió un error buscando tu reserva. Intenta de nuevo en un momento.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Buscar mi reserva';
+  }
+};
+</script>
+<div style="position:fixed;bottom:4px;left:0;right:0;text-align:center;font-family:'Barlow',sans-serif;font-size:.6rem;letter-spacing:.08em;color:rgba(240,237,232,.15);pointer-events:none;z-index:9998">Build by Ormuz</div>
+</body>
+</html>
