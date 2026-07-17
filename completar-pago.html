@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Completar Reserva — Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<style>
+:root{--navy:#071a26;--navy-mid:#0d2d3f;--teal:#0b9e99;--teal-light:#3ecfc4;--gold:#f5c842;--white:#fff;--gray:#8ab2b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{overflow-x:hidden}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+.wrap{max-width:460px;width:100%;margin-top:20px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;text-align:center;margin-bottom:24px}
+.logo span{color:var(--gold)}
+.card{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.3);border-radius:16px;padding:28px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:26px;margin-bottom:16px;text-align:center}
+.resumen{background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:16px;margin-bottom:18px;font-size:13px}
+.resumen .r{display:flex;justify-content:space-between;padding:4px 0}
+.resumen .r span:first-child{color:var(--gray)}
+.folio-box{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;margin-bottom:18px}
+.folio-box .l{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+.folio-box .f{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);letter-spacing:1px}
+.transfer-box{background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:14px;font-size:12.5px;line-height:2;margin-bottom:16px}
+.transfer-box .r{display:flex;justify-content:space-between}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.form-group input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:inherit;font-size:16px}
+.submit-btn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:6px}
+.err{color:#ff6b6b;font-size:12px;min-height:14px;margin-top:8px}
+.loading,.empty{text-align:center;color:var(--gray);padding:40px 0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">NEX<span>ORA</span></div>
+  <div class="card" id="card">
+    <div class="loading">Buscando tu reserva...</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJR13NWfWBURGZZtUhzA0OVjm3nSxCR28",
+  authDomain: "nexora-club.firebaseapp.com",
+  projectId: "nexora-club",
+  storageBucket: "nexora-club.firebasestorage.app",
+  messagingSenderId: "651071612444",
+  appId: "1:651071612444:web:86bb7b36b1446220e661d9"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(location.search);
+const tipo = params.get('tipo'); // 'tour' o 'vehiculo'
+const id = params.get('id');
+const coleccion = tipo === 'vehiculo' ? 'nexora_vehiculos_reservas' : 'nexora_tours_reservas';
+
+const card = document.getElementById('card');
+let reserva = null;
+
+function fmt(n) { return Number(n).toLocaleString('es-MX'); }
+
+async function cargar() {
+  if (!tipo || !id) { card.innerHTML = '<div class="empty">Link inválido — falta información.</div>'; return; }
+  try {
+    const snap = await getDoc(doc(db, coleccion, id));
+    if (!snap.exists()) { card.innerHTML = '<div class="empty">No encontramos esa reserva. Verifica tu link.</div>'; return; }
+    reserva = { id: snap.id, ...snap.data() };
+    if (reserva.comprobanteUrl) {
+      card.innerHTML = `<div class="empty">✓ Esta reserva ya tiene un comprobante subido.<br>Folio: <strong style="color:var(--gold)">${reserva.folio}</strong><br>Estado: ${reserva.estado}</div>`;
+      return;
+    }
+    renderForm();
+  } catch (e) {
+    card.innerHTML = '<div class="empty">Ocurrió un error buscando tu reserva. Intenta de nuevo.</div>';
+  }
+}
+
+function renderForm() {
+  const esVehiculo = tipo === 'vehiculo';
+  const nombreProducto = esVehiculo ? reserva.vehiculoNombre : reserva.tourNombre;
+  const total = esVehiculo ? reserva.totalEstimado : reserva.totalMXN;
+  const deposito = reserva.deposito;
+
+  card.innerHTML = `
+    <h1>Completa tu reserva</h1>
+    <div class="resumen">
+      <div class="r"><span>${esVehiculo ? 'Vehículo' : 'Tour'}</span><span>${nombreProducto}</span></div>
+      ${esVehiculo
+        ? `<div class="r"><span>Del</span><span>${reserva.fechaInicio}</span></div><div class="r"><span>Al</span><span>${reserva.fechaFin}</span></div>`
+        : `<div class="r"><span>Fecha</span><span>${reserva.fecha}</span></div>`}
+      <div class="r"><span>Total</span><span>$${fmt(total)} MXN</span></div>
+      <div class="r"><span>Anticipo a transferir</span><span style="color:var(--gold)">$${fmt(deposito)} MXN</span></div>
+    </div>
+
+    <div class="folio-box">
+      <div class="l">Tu folio</div>
+      <div class="f">${reserva.folio}</div>
+    </div>
+
+    <div class="transfer-box">
+      <div class="r"><span style="color:var(--gray)">Institución</span><strong style="color:var(--teal-light)">BBVA</strong></div>
+      <div class="r"><span style="color:var(--gray)">Beneficiario</span><strong style="color:var(--teal-light)">Membresía Nexora</strong></div>
+      <div class="r"><span style="color:var(--gray)">Tarjeta</span><strong style="color:var(--gold)">4152 3141 9214 8651</strong></div>
+      <div class="r"><span style="color:var(--gray)">Referencia</span><strong style="color:var(--gold)">${reserva.nombre}</strong></div>
+    </div>
+
+    <div class="form-group">
+      <label>Comprobante de transferencia</label>
+      <input type="file" id="f-comprobante" accept="image/*,.pdf">
+    </div>
+    <button class="submit-btn" id="submit-btn">Confirmar Comprobante</button>
+    <div class="err" id="err"></div>
+  `;
+  document.getElementById('submit-btn').onclick = subirComprobante;
+}
+
+function comprimirImagenSiEsNecesario(file) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/') || file.size <= 1.2 * 1024 * 1024) { resolve(file); return; }
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX_LADO = 1600; let { width, height } = img;
+      if (width > height && width > MAX_LADO) { height = height * (MAX_LADO / width); width = MAX_LADO; }
+      else if (height > MAX_LADO) { width = width * (MAX_LADO / height); height = MAX_LADO; }
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.75);
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function subirComprobante() {
+  const errEl = document.getElementById('err');
+  errEl.textContent = '';
+  const file = document.getElementById('f-comprobante').files[0];
+  if (!file) { errEl.textContent = 'Sube tu comprobante para continuar.'; return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Preparando...'; btn.disabled = true;
+
+  try {
+    const comprimido = await comprimirImagenSiEsNecesario(file);
+    if (comprimido.size > 3 * 1024 * 1024) {
+      errEl.textContent = 'Tu archivo pesa demasiado incluso comprimido.';
+      btn.textContent = 'Confirmar Comprobante'; btn.disabled = false; return;
+    }
+
+    btn.textContent = 'Subiendo comprobante...';
+    const base64 = await fileToBase64(comprimido);
+    const carpeta = `${tipo === 'vehiculo' ? 'vehiculos-reservas' : 'tours-reservas'}/${reserva.folio}`;
+    const respSubida = await fetch('/api/subir-comprobante', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carpeta, nombreArchivo: comprimido.name, contentType: comprimido.type, base64 }),
+    });
+    const resultSubida = await respSubida.json();
+    if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante');
+
+    btn.textContent = 'Guardando...';
+    await updateDoc(doc(db, coleccion, reserva.id), { comprobanteUrl: resultSubida.url });
+
+    btn.textContent = 'Enviando confirmación...';
+    const endpoint = tipo === 'vehiculo' ? '/api/enviar-confirmacion-vehiculo' : '/api/enviar-confirmacion';
+    const payloadBase = tipo === 'vehiculo'
+      ? { folio: reserva.folio, vehiculoNombre: reserva.vehiculoNombre, nombre: reserva.nombre, email: reserva.email, whatsapp: reserva.whatsapp, fechaInicio: reserva.fechaInicio, fechaFin: reserva.fechaFin, dias: reserva.dias, zonaEntrega: reserva.zonaEntrega, totalEstimado: fmt(reserva.totalEstimado), deposito: reserva.deposito, comprobanteUrl: resultSubida.url }
+      : { folio: reserva.folio, tourNombre: reserva.tourNombre, nombre: reserva.nombre, email: reserva.email, whatsapp: reserva.whatsapp, hotel: reserva.hotel, fecha: reserva.fecha, personas: `${reserva.adultos} adulto(s)${reserva.menores ? ', ' + reserva.menores + ' menor(es)' : ''}`, totalMXN: fmt(reserva.totalMXN), deposito: reserva.deposito, comprobanteUrl: resultSubida.url };
+
+    try {
+      await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadBase) });
+    } catch (e) { console.warn('Error enviando correos:', e); }
+
+    card.innerHTML = `
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:48px;margin-bottom:10px">✓</div>
+        <h1>¡Comprobante recibido!</h1>
+        <p style="color:var(--gray);font-size:13px;margin-top:10px">Validamos tu pago en un máximo de 3 horas. Guarda tu folio:</p>
+        <div class="folio-box" style="margin-top:16px"><div class="f">${reserva.folio}</div></div>
+      </div>`;
+  } catch (err) {
+    errEl.textContent = err.message || 'Ocurrió un error, intenta de nuevo.';
+    btn.textContent = 'Confirmar Comprobante'; btn.disabled = false;
+  }
+}
+
+cargar();
+</script>
+</body>
+</html>
