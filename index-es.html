@@ -4,24 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nexora | Kazzan — Tours Cancún</title>
-
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://nexora-tours.vercel.app/index-es.html">
-<meta property="og:title" content="Tours en Cancún — Nexora">
-<meta property="og:description" content="Reserva tours reales en Isla Mujeres, Xcaret y Xel-Há. Aparta hoy, paga al abordar.">
-<meta property="og:image" content="https://nexora-tours.vercel.app/og-image.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tours en Cancún — Nexora">
-<meta name="twitter:description" content="Reserva tours reales en Isla Mujeres, Xcaret y Xel-Há. Aparta hoy, paga al abordar.">
-<meta name="twitter:image" content="https://nexora-tours.vercel.app/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
@@ -426,6 +408,7 @@ const PAISES_LADA = [
   { iso: 'de', code: '49', label: 'DE +49' },
   { iso: 'it', code: '39', label: 'IT +39' },
 ];
+window.PAISES_LADA = PAISES_LADA;
 
 function initLadaSelector(sufijo) {
   const dropdown = document.getElementById('lada-dropdown-' + sufijo);
@@ -728,9 +711,39 @@ try {
     if (t.activo !== false) tours.push({ id: d.id, ...t });
   });
   window.renderTours(tours);
+  aplicarPrefillDesdeURL(tours);
 } catch (e) {
   console.error('Error cargando tours:', e);
   document.getElementById('tours-list').innerHTML = '<p style="text-align:center;color:var(--gray);padding:40px 0">No se pudieron cargar los tours. Intenta recargar la página.</p>';
+}
+
+function aplicarPrefillDesdeURL(tours) {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('prefill') !== '1') return;
+
+  const tourId = params.get('tour');
+  const tour = tours.find(t => t.id === tourId);
+  if (!tour) return;
+
+  window.openModal(tour.nombre, tour.id);
+
+  setTimeout(() => {
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    setVal('f-name', params.get('nombre'));
+    setVal('f-email', params.get('email'));
+    setVal('f-whatsapp-numero', params.get('whatsapp_numero'));
+    setVal('f-hotel', params.get('hotel'));
+    setVal('f-date', params.get('fecha'));
+    setVal('f-adults', params.get('adultos'));
+    setVal('f-children', params.get('menores'));
+
+    const lada = params.get('whatsapp_lada');
+    if (lada) {
+      const opt = window.PAISES_LADA.find(p => p.code === lada);
+      if (opt) window.seleccionarLada('tour', opt.iso, opt.code, opt.label);
+    }
+    if (typeof updateSummary === 'function') updateSummary();
+  }, 150);
 }
 </script>
 </body>
