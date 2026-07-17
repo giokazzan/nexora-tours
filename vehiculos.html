@@ -237,7 +237,38 @@ async function cargarVehiculos() {
     cont.innerHTML = '<div class="empty">No se pudieron cargar los vehículos. Intenta recargar.</div>';
   }
 }
-cargarVehiculos();
+cargarVehiculos().then(aplicarPrefillVehiculoDesdeURL);
+
+function aplicarPrefillVehiculoDesdeURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('prefill') !== '1') return;
+  if (!VEHICULOS.length) return;
+
+  window.abrirModalVehiculo(VEHICULOS[0].id);
+
+  setTimeout(() => {
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    setVal('f-name', params.get('nombre'));
+    setVal('f-email', params.get('email'));
+    setVal('f-whatsapp-numero', params.get('whatsapp_numero'));
+    setVal('f-fecha-inicio', params.get('fecha_inicio'));
+    setVal('f-fecha-fin', params.get('fecha_fin'));
+
+    const zona = params.get('zona');
+    if (zona) {
+      const zonaSel = document.getElementById('f-zona');
+      const match = Array.from(zonaSel.options).find(o => o.value.toLowerCase().includes(zona.toLowerCase()));
+      if (match) zonaSel.value = match.value;
+    }
+
+    const lada = params.get('whatsapp_lada');
+    if (lada) {
+      const opt = PAISES_LADA.find(p => p.code === lada);
+      if (opt) window.seleccionarLada('veh', opt.iso, opt.code, opt.label);
+    }
+    window.actualizarResumenReserva();
+  }, 150);
+}
 
 const PAISES_LADA = [
   { iso: 'mx', code: '52', label: 'MX +52' },
