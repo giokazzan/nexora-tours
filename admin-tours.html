@@ -77,6 +77,7 @@ button{cursor:pointer;font-family:inherit;}
   <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.1)">
     <button class="tab-btn active" id="tabbtn-tours" onclick="cambiarTab('tours')">🌴 Tours</button>
     <button class="tab-btn" id="tabbtn-vehiculos" onclick="cambiarTab('vehiculos')">🚗 Vehículos</button>
+    <button class="tab-btn" id="tabbtn-reservas" onclick="cambiarTab('reservas')">📋 Reservas</button>
   </div>
 
   <div id="tab-tours">
@@ -197,6 +198,18 @@ button{cursor:pointer;font-family:inherit;}
     </div>
 
   </div>
+
+  <div id="tab-reservas" class="hidden">
+    <div class="card">
+      <div class="section-label">Reservas</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn-secondary btn" id="filtro-pendientes" style="width:auto;margin:0;padding:9px 16px;background:var(--teal-light);color:var(--navy)" onclick="cambiarFiltroReservas('pendiente')">Pendientes</button>
+        <button class="btn-secondary btn" id="filtro-todas" style="width:auto;margin:0;padding:9px 16px" onclick="cambiarFiltroReservas('todas')">Todas</button>
+      </div>
+      <div id="lista-reservas">Cargando…</div>
+    </div>
+  </div>
+
 </div>
 
 <script type="module">
@@ -244,9 +257,12 @@ window.hacerLogin = async () => {
 window.cambiarTab = (tab) => {
   document.getElementById('tab-tours').classList.toggle('hidden', tab !== 'tours');
   document.getElementById('tab-vehiculos').classList.toggle('hidden', tab !== 'vehiculos');
+  document.getElementById('tab-reservas').classList.toggle('hidden', tab !== 'reservas');
   document.getElementById('tabbtn-tours').classList.toggle('active', tab === 'tours');
   document.getElementById('tabbtn-vehiculos').classList.toggle('active', tab === 'vehiculos');
+  document.getElementById('tabbtn-reservas').classList.toggle('active', tab === 'reservas');
   if (tab === 'vehiculos') cargarVehiculos();
+  if (tab === 'reservas') cargarReservas();
 };
 
 onAuthStateChanged(auth, (user) => {
@@ -629,6 +645,99 @@ window.toggleFechaBloqueada = async (vehId, fechaStr, estaBloqueada, celda) => {
     celda.classList.remove('guardando');
     statusEl.style.color = '#ff6b6b';
     statusEl.textContent = `⚠️ No se pudo guardar el cambio en ${fechaStr}. Intenta de nuevo — no se actualizó el calendario.`;
+  }
+};
+
+// ════════════════════════════════════════
+// RESERVAS — comprobantes pendientes de tours y vehiculos
+// ════════════════════════════════════════
+let filtroReservasActual = 'pendiente';
+let reservasCache = [];
+
+window.cambiarFiltroReservas = (filtro) => {
+  filtroReservasActual = filtro;
+  document.getElementById('filtro-pendientes').style.background = filtro === 'pendiente' ? 'var(--teal-light)' : '';
+  document.getElementById('filtro-pendientes').style.color = filtro === 'pendiente' ? 'var(--navy)' : '';
+  document.getElementById('filtro-todas').style.background = filtro === 'todas' ? 'var(--teal-light)' : '';
+  document.getElementById('filtro-todas').style.color = filtro === 'todas' ? 'var(--navy)' : '';
+  renderReservas();
+};
+
+async function cargarReservas() {
+  const cont = document.getElementById('lista-reservas');
+  cont.innerHTML = 'Cargando…';
+  try {
+    const [snapTours, snapVeh] = await Promise.all([
+      getDocs(collection(db, 'nexora_tours_reservas')),
+      getDocs(collection(db, 'nexora_vehiculos_reservas')),
+    ]);
+    reservasCache = [];
+    snapTours.forEach(d => reservasCache.push({ id: d.id, tipo: 'tour', coleccion: 'nexora_tours_reservas', ...d.data() }));
+    snapVeh.forEach(d => reservasCache.push({ id: d.id, tipo: 'vehiculo', coleccion: 'nexora_vehiculos_reservas', ...d.data() }));
+    reservasCache.sort((a, b) => (b.creado?.toMillis?.() || 0) - (a.creado?.toMillis?.() || 0));
+    renderReservas();
+  } catch (e) {
+    cont.innerHTML = '<div class="err" style="display:block">Error al cargar: ' + e.message + '</div>';
+  }
+}
+
+function renderReservas() {
+  const cont = document.getElementById('lista-reservas');
+  const lista = filtroReservasActual === 'todas' ? reservasCache : reservasCache.filter(r => (r.estado || 'pendiente') === 'pendiente');
+
+  if (!lista.length) {
+    cont.innerHTML = '<div style="color:var(--gray);font-size:13px">' + (filtroReservasActual === 'pendiente' ? 'No hay reservas pendientes 🎉' : 'Aún no hay reservas.') + '</div>';
+    return;
+  }
+
+  cont.innerHTML = lista.map(r => {
+    const esTour = r.tipo === 'tour';
+    const nombreProducto = esTour ? r.tourNombre : r.vehiculoNombre;
+    const fechaTexto = esTour ? r.fecha : `${r.fechaInicio} → ${r.fechaFin}`;
+    const totalTexto = esTour ? r.totalMXN : r.totalEstimado;
+    const whatsappLink = r.whatsapp ? `https://wa.me/${r.whatsapp}` : null;
+
+    let badgeColor = '#f5c842', badgeTexto = 'Pendiente';
+    if (r.estado === 'confirmada') { badgeColor = '#5dcf8e'; badgeTexto = 'Confirmada'; }
+    else if (r.estado === 'rechazada') { badgeColor = '#ff6b6b'; badgeTexto = 'Rechazada'; }
+
+    let iaHtml = '';
+    if (r.verificacionIA && r.verificacionIA.legible && r.verificacionIA.monto != null) {
+      const coincide = Math.abs(r.verificacionIA.monto - (r.deposito || 0)) <= Math.max(5, (r.deposito || 0) * 0.05);
+      iaHtml = `<div style="font-size:11px;margin-top:6px;color:${coincide ? '#5dcf8e' : '#ff6b6b'}">${coincide ? '✓' : '⚠️'} IA detectó: $${r.verificacionIA.monto} MXN${r.verificacionIA.referencia ? ' · ref: ' + r.verificacionIA.referencia : ''}</div>`;
+    } else if (r.verificacionIA && !r.verificacionIA.legible) {
+      iaHtml = `<div style="font-size:11px;margin-top:6px;color:var(--gray)">⚠️ La IA no pudo leer el comprobante con claridad — revísalo tú mismo.</div>`;
+    }
+
+    return `<div class="tour-row" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="name">${esTour ? '🌴' : '🚗'} ${nombreProducto} — <span style="color:var(--gray);font-weight:400">${r.folio}</span></div>
+          <div class="meta">${r.nombre} · ${r.email}${whatsappLink ? ` · <a href="${whatsappLink}" target="_blank" style="color:var(--teal-light)">WhatsApp</a>` : ''}</div>
+          <div class="meta">${fechaTexto} · $${(totalTexto || 0).toLocaleString('es-MX')} MXN total · depósito $${(r.deposito || 0).toLocaleString('es-MX')} MXN</div>
+          ${iaHtml}
+        </div>
+        <span style="background:${badgeColor};color:var(--navy);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap">${badgeTexto}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a href="${r.comprobanteUrl}" target="_blank" class="btn-secondary btn" style="width:auto;margin:0;padding:8px 14px;text-decoration:none;display:inline-block">📎 Ver comprobante</a>
+        ${(r.estado || 'pendiente') === 'pendiente' ? `
+          <button class="btn" style="width:auto;margin:0;padding:8px 14px;background:#5dcf8e" onclick="actualizarEstadoReserva('${r.coleccion}','${r.id}','confirmada')">✓ Confirmar</button>
+          <button class="btn-secondary btn" style="width:auto;margin:0;padding:8px 14px" onclick="actualizarEstadoReserva('${r.coleccion}','${r.id}','rechazada')">✕ Rechazar</button>
+        ` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.actualizarEstadoReserva = async (coleccion, id, nuevoEstado) => {
+  try {
+    await updateDoc(doc(db, coleccion, id), { estado: nuevoEstado });
+    const r = reservasCache.find(x => x.id === id && x.coleccion === coleccion);
+    if (r) r.estado = nuevoEstado;
+    renderReservas();
+  } catch (e) {
+    alert('Error al actualizar: ' + e.message);
   }
 };
 </script>
