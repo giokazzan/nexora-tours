@@ -681,7 +681,7 @@ aplicarFadeIn('.step');
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp }
+import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp, doc, setDoc }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -700,6 +700,7 @@ window.crearReservaFirestore = async function(datos) {
     ...datos,
     creado: serverTimestamp(),
   });
+  try { await setDoc(doc(db, 'reservas_index', datos.folio), { coleccion: 'nexora_tours_reservas', docId: ref.id }); } catch (e) {}
   return ref.id;
 };
 
