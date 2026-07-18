@@ -88,6 +88,12 @@ const MENSAJES = {
   rechazada: '⚠️ Hubo un problema validando tu comprobante. Escríbenos por WhatsApp para resolverlo.',
 };
 
+const folioURL = new URLSearchParams(window.location.search).get('folio');
+if (folioURL) {
+  document.getElementById('f-folio').value = folioURL;
+  setTimeout(() => window.buscarReserva(), 100);
+}
+
 window.buscarReserva = async () => {
   const folioInput = document.getElementById('f-folio');
   const folio = folioInput.value.trim().toUpperCase();
