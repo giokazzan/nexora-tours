@@ -52,6 +52,7 @@ function plantillaCliente(d) {
         <div style="font-size:11px;color:#8a7015;text-transform:uppercase;letter-spacing:1px">Tu folio</div>
         <div style="font-size:24px;font-weight:bold;color:#8a7015;letter-spacing:1px">${d.folio}</div>
       </div>
+      <a href="https://nexora-tours.vercel.app/mi-reserva.html?folio=${encodeURIComponent(d.folio)}" style="display:block;background:#0b9e99;color:#fff;text-decoration:none;text-align:center;padding:12px;border-radius:8px;font-weight:bold;margin-bottom:16px">Ver el estado de mi reserva</a>
       <p style="font-size:13px;color:#666;line-height:1.6">Validamos tu comprobante en un máximo de <strong>3 horas</strong>. El resto se paga en efectivo o transferencia al recibir el vehículo. Guarda este folio para dar seguimiento.</p>
       <div style="background:#f7f7f5;border-radius:8px;padding:12px 16px;margin-top:16px;text-align:center">
         <p style="font-size:12px;color:#888;margin:0">¿No recibiste confirmación en 6 horas?<br>
