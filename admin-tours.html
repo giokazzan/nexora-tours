@@ -733,13 +733,15 @@ async function cargarReservas() {
   const cont = document.getElementById('lista-reservas');
   cont.innerHTML = 'Cargando…';
   try {
-    const [snapTours, snapVeh] = await Promise.all([
+    const [snapTours, snapVeh, snapTrasl] = await Promise.all([
       getDocs(collection(db, 'nexora_tours_reservas')),
       getDocs(collection(db, 'nexora_vehiculos_reservas')),
+      getDocs(collection(db, 'nexora_traslados_reservas')),
     ]);
     reservasCache = [];
     snapTours.forEach(d => reservasCache.push({ id: d.id, tipo: 'tour', coleccion: 'nexora_tours_reservas', ...d.data() }));
     snapVeh.forEach(d => reservasCache.push({ id: d.id, tipo: 'vehiculo', coleccion: 'nexora_vehiculos_reservas', ...d.data() }));
+    snapTrasl.forEach(d => reservasCache.push({ id: d.id, tipo: 'traslado', coleccion: 'nexora_traslados_reservas', ...d.data() }));
     reservasCache.sort((a, b) => (b.creado?.toMillis?.() || 0) - (a.creado?.toMillis?.() || 0));
     renderReservas();
   } catch (e) {
@@ -758,9 +760,20 @@ function renderReservas() {
 
   cont.innerHTML = lista.map(r => {
     const esTour = r.tipo === 'tour';
-    const nombreProducto = esTour ? r.tourNombre : r.vehiculoNombre;
-    const fechaTexto = esTour ? r.fecha : `${r.fechaInicio} → ${r.fechaFin}`;
-    const totalTexto = esTour ? r.totalMXN : r.totalEstimado;
+    const esVehiculo = r.tipo === 'vehiculo';
+    const esTraslado = r.tipo === 'traslado';
+
+    let icono, nombreProducto, fechaTexto, totalTexto;
+    if (esTour) {
+      icono = '🌴'; nombreProducto = r.tourNombre; fechaTexto = r.fecha; totalTexto = r.totalMXN;
+    } else if (esVehiculo) {
+      icono = '🚗'; nombreProducto = r.vehiculoNombre; fechaTexto = `${r.fechaInicio} → ${r.fechaFin}`; totalTexto = r.totalEstimado;
+    } else {
+      icono = '🚐'; nombreProducto = r.trasladoNombre + (r.redondo ? ' (redondo)' : '');
+      const dv = r.datosViaje || {};
+      fechaTexto = dv.tipo === 'llegada' ? `Llegada: ${dv.fecha} ${dv.hora} · ${dv.hotelDestino || ''}` : `Salida: ${dv.fechaVuelo} ${dv.horaVuelo} · pick-up ${dv.horaPickupCalculada || '?'} · ${dv.hotelOrigen || ''}`;
+      totalTexto = r.totalMXN;
+    }
     const whatsappLink = r.whatsapp ? `https://wa.me/${r.whatsapp}` : null;
 
     let badgeColor = '#f5c842', badgeTexto = 'Pendiente';
@@ -778,7 +791,7 @@ function renderReservas() {
     return `<div class="tour-row" style="flex-direction:column;align-items:stretch;gap:8px;padding:14px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <div class="name">${esTour ? '🌴' : '🚗'} ${nombreProducto} — <span style="color:var(--gray);font-weight:400">${r.folio}</span></div>
+          <div class="name">${icono} ${nombreProducto} — <span style="color:var(--gray);font-weight:400">${r.folio}</span></div>
           <div class="meta">${r.nombre} · ${r.email}${whatsappLink ? ` · <a href="${whatsappLink}" target="_blank" style="color:var(--teal-light)">WhatsApp</a>` : ''}</div>
           <div class="meta">${fechaTexto} · $${(totalTexto || 0).toLocaleString('es-MX')} MXN total · depósito $${(r.deposito || 0).toLocaleString('es-MX')} MXN</div>
           ${iaHtml}
