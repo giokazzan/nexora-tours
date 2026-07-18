@@ -43,17 +43,25 @@ p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
 
 .soporte{margin-top:20px;text-align:center;font-size:.78rem;color:var(--gray);}
 .soporte a{color:var(--teal-light);font-weight:600;text-decoration:none;}
+
+.topnav{position:fixed;top:20px;left:20px;}
+.topnav a{color:var(--gray);font-size:.82rem;text-decoration:none;}
+.topnav a:hover{color:var(--teal-light);}
 </style>
 </head>
 <body>
 
+<div class="topnav"><a href="https://www.nexora-travel.com/">← Volver al sitio</a></div>
 <div class="logo">N<span>EX</span>ORA</div>
 <div class="tagline">Privileged Access</div>
 
 <div class="card">
   <h1>¿Cómo va tu reserva?</h1>
-  <p class="sub">Escribe el folio que te dimos al confirmar tu reserva de tour o vehículo.</p>
+  <p class="sub">Escribe tu apellido y el folio que te dimos al confirmar tu reserva de tour o vehículo.</p>
 
+  <div class="form-group" style="margin-bottom:12px">
+    <input type="text" id="f-apellido" placeholder="Tu apellido" style="text-transform:none;letter-spacing:normal;text-align:left" onkeydown="if(event.key==='Enter')buscarReserva()">
+  </div>
   <div class="form-group">
     <input type="text" id="f-folio" placeholder="Ej: TUR-ABC123-XYZ9" onkeydown="if(event.key==='Enter')buscarReserva()">
   </div>
@@ -94,22 +102,29 @@ if (folioURL) {
   setTimeout(() => window.buscarReserva(), 100);
 }
 
+function normalizar(txt) {
+  return (txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
 window.buscarReserva = async () => {
   const folioInput = document.getElementById('f-folio');
+  const apellidoInput = document.getElementById('f-apellido');
   const folio = folioInput.value.trim().toUpperCase();
+  const apellido = normalizar(apellidoInput.value);
   const errEl = document.getElementById('err-msg');
   const resultadoEl = document.getElementById('resultado');
   const btn = document.getElementById('btn-buscar');
   errEl.textContent = '';
   resultadoEl.style.display = 'none';
 
+  if (!apellido) { errEl.textContent = 'Escribe tu apellido antes de buscar.'; return; }
   if (!folio) { errEl.textContent = 'Escribe tu folio antes de buscar.'; return; }
 
   btn.disabled = true; btn.textContent = 'Buscando...';
   try {
     const indexSnap = await getDoc(doc(db, 'reservas_index', folio));
     if (!indexSnap.exists()) {
-      errEl.textContent = 'No encontramos ese folio. Revisa que esté bien escrito, o contáctanos si sigue sin aparecer.';
+      errEl.textContent = 'No encontramos una reserva con esos datos. Revisa que el folio y el apellido estén bien escritos.';
       return;
     }
     const { coleccion, docId } = indexSnap.data();
@@ -120,6 +135,15 @@ window.buscarReserva = async () => {
     }
 
     const r = resSnap.data();
+
+    // Verificación estilo Volaris: el apellido debe aparecer en el nombre registrado
+    const nombreGuardado = normalizar(r.nombre);
+    const palabrasNombre = nombreGuardado.split(/\s+/);
+    if (!palabrasNombre.includes(apellido)) {
+      errEl.textContent = 'No encontramos una reserva con esos datos. Revisa que el folio y el apellido estén bien escritos.';
+      return;
+    }
+
     const esTour = coleccion === 'nexora_tours_reservas';
     const nombreProducto = esTour ? r.tourNombre : r.vehiculoNombre;
     const fechaTexto = esTour ? r.fecha : `${r.fechaInicio} → ${r.fechaFin}`;
