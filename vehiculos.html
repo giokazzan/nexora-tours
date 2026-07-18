@@ -95,7 +95,10 @@ details.politicas .pol-item{padding:5px 0;border-bottom:1px solid rgba(255,255,2
 <div class="wrap">
   <header>
     <a href="https://www.nexora-travel.com/" class="logo">NEXORA <span>|</span> KAZZAN</a>
-    <a href="https://www.nexora-travel.com/#nv-vehiculos" class="back">← Volver al inicio</a>
+    <div style="display:flex;gap:16px;align-items:center">
+      <a href="/mi-reserva.html" class="back">Mi reserva</a>
+      <a href="https://www.nexora-travel.com/#nv-vehiculos" class="back">← Volver al inicio</a>
+    </div>
   </header>
 
   <div class="hero">
@@ -500,6 +503,7 @@ window.submitReserva = async () => {
           <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--teal-light);letter-spacing:1px">${folio}</div>
         </div>
         <div class="alert-warning" style="margin-bottom:16px">Validamos tu comprobante en un máximo de <strong>3 horas</strong>. El resto se paga al recibir el vehículo.</div>
+        <a href="https://nexora-tours.vercel.app/mi-reserva.html?folio=${encodeURIComponent(folio)}" target="_blank" style="display:block;text-align:center;background:transparent;color:var(--teal-light);border:1px solid var(--teal-light);border-radius:8px;padding:12px;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;text-decoration:none;margin-bottom:10px">Ver el estado de mi reserva</a>
         <button onclick="closeModal()" class="submit-btn">Cerrar</button>
       </div>`;
   } catch (err) {
