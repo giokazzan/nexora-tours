@@ -78,6 +78,7 @@ button{cursor:pointer;font-family:inherit;}
     <button class="tab-btn active" id="tabbtn-tours" onclick="cambiarTab('tours')">🌴 Tours</button>
     <button class="tab-btn" id="tabbtn-vehiculos" onclick="cambiarTab('vehiculos')">🚗 Vehículos</button>
     <button class="tab-btn" id="tabbtn-reservas" onclick="cambiarTab('reservas')">📋 Reservas</button>
+    <button class="tab-btn" id="tabbtn-traslados" onclick="cambiarTab('traslados')">🚐 Traslados</button>
   </div>
 
   <div id="tab-tours">
@@ -210,6 +211,68 @@ button{cursor:pointer;font-family:inherit;}
     </div>
   </div>
 
+  <div id="tab-traslados" class="hidden">
+    <div class="card">
+      <div class="section-label" id="trasl-form-titulo">Configurar servicio de traslados</div>
+      <label>Nombre del servicio</label>
+      <input type="text" id="tr-nombre" placeholder="ej: Traslados Aeropuerto Cancún" value="Traslados Aeropuerto Cancún">
+      <label>Vehículo</label>
+      <input type="text" id="tr-vehiculo" placeholder="ej: Toyota HiAce" value="Toyota HiAce">
+      <label>Descripción (el "por qué")</label>
+      <textarea id="tr-descripcion" placeholder="Transporte privado, cómodo, para grupos con equipaje">Transporte privado directo desde el Aeropuerto de Cancún — mismo costo para 1 a 8 pasajeros, ideal si vienen con maletas y buscan comodidad sin compartir con desconocidos.</textarea>
+      <div class="row2">
+        <div><label>Pasajeros máximo</label><input type="number" id="tr-max-pasajeros" value="8"></div>
+        <div><label>Punto de encuentro (llegadas)</label><input type="text" id="tr-punto-encuentro" value="Welcome Bar, terminal de llegadas"></div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px">Dinero</div>
+      <div class="row2">
+        <div><label>Depósito por servicio (MXN)</label><input type="number" id="tr-deposito" value="150"></div>
+        <div><label>Descuento en redondo (MXN)</label><input type="number" id="tr-descuento-redondo" value="100"></div>
+      </div>
+      <div class="row2">
+        <div><label>Costo de cambio de fecha/hora (MXN)</label><input type="number" id="tr-costo-cambio" value="100"></div>
+        <div><label>Horas mínimas de anticipación para cambio</label><input type="number" id="tr-horas-cambio" value="24"></div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px">Reglas de andén</div>
+      <div class="row2">
+        <div><label>Minutos de tolerancia libre</label><input type="number" id="tr-tolerancia-min" value="15"></div>
+        <div><label>Penalidad por tardanza (MXN)</label><input type="number" id="tr-penalidad" value="200"></div>
+      </div>
+      <label>Minutos máximos antes de cancelar sin reembolso</label>
+      <input type="number" id="tr-tolerancia-max" value="25">
+
+      <label>Políticas completas (se muestran al cliente)</label>
+      <textarea id="tr-politicas" style="min-height:110px">Debes estar en el aeropuerto al menos 2 horas 15 minutos antes de tu vuelo — nosotros calculamos tu hora de recolección para cumplir esto.
+Una vez pagado el anticipo, no hay cancelaciones ni devoluciones.
+Cambios de fecha/hora tienen un costo de $100 MXN, solicitados con mínimo 24 horas de anticipación.
+Si no se paga el saldo 24 horas antes del servicio, se cancela automáticamente y se pierde el anticipo.
+La unidad espera hasta 15 minutos sin costo. De 15 a 25 minutos hay una penalidad de $200 MXN. Después de 25 minutos, el servicio se cancela sin reembolso.
+En llegadas, nos encontramos en el Welcome Bar de la terminal.</textarea>
+
+      <div class="section-label" style="margin-top:20px">Zonas y tarifas</div>
+      <div class="sub" style="margin-bottom:10px">Cada zona define su precio y sus límites geográficos. El orden importa para mostrarlas en la web.</div>
+      <div id="zonas-editor"></div>
+      <button class="btn-secondary btn" style="margin-top:8px" onclick="agregarZonaVacia()">+ Agregar zona</button>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+        <input type="checkbox" id="tr-activo" checked style="width:auto">
+        <label style="margin:0">Visible en el sitio</label>
+      </div>
+
+      <button class="btn" id="btn-guardar-traslado" onclick="guardarTraslado()">Guardar Servicio</button>
+      <button class="btn-secondary btn" id="btn-cancelar-traslado" onclick="cancelarEdicionTraslado()" style="display:none">Cancelar edición</button>
+      <div class="err" id="trasl-form-err"></div>
+      <div class="ok" id="trasl-form-ok"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Servicios de traslado existentes</div>
+      <div id="lista-traslados">Cargando…</div>
+    </div>
+  </div>
+
 </div>
 
 <script type="module">
@@ -258,11 +321,14 @@ window.cambiarTab = (tab) => {
   document.getElementById('tab-tours').classList.toggle('hidden', tab !== 'tours');
   document.getElementById('tab-vehiculos').classList.toggle('hidden', tab !== 'vehiculos');
   document.getElementById('tab-reservas').classList.toggle('hidden', tab !== 'reservas');
+  document.getElementById('tab-traslados').classList.toggle('hidden', tab !== 'traslados');
   document.getElementById('tabbtn-tours').classList.toggle('active', tab === 'tours');
   document.getElementById('tabbtn-vehiculos').classList.toggle('active', tab === 'vehiculos');
   document.getElementById('tabbtn-reservas').classList.toggle('active', tab === 'reservas');
+  document.getElementById('tabbtn-traslados').classList.toggle('active', tab === 'traslados');
   if (tab === 'vehiculos') cargarVehiculos();
   if (tab === 'reservas') cargarReservas();
+  if (tab === 'traslados') cargarTraslados();
 };
 
 onAuthStateChanged(auth, (user) => {
@@ -739,6 +805,168 @@ window.actualizarEstadoReserva = async (coleccion, id, nuevoEstado) => {
   } catch (e) {
     alert('Error al actualizar: ' + e.message);
   }
+};
+
+// ════════════════════════════════════════
+// TRASLADOS TERRESTRES
+// ════════════════════════════════════════
+let zonasEditor = [];
+let trasladoEditandoId = null;
+let trasladosCache = [];
+
+const ZONAS_DEFAULT = [
+  { nombre: 'Cancún Centro / Zona Hotelera', precio: 650, limiteDesc: '500m antes de Ultramar (entrada Puerto Juárez) hasta Hotel Hilton Cancún' },
+  { nombre: 'Costa Mujeres', precio: 800, limiteDesc: 'Desde Ultramar hasta el final de Costa Mujeres' },
+  { nombre: 'Puerto Morelos', precio: 800, limiteDesc: 'Desde Hotel Hilton Cancún hasta el puente que da inicio a Playa del Carmen' },
+  { nombre: 'Playa del Carmen', precio: 1150, limiteDesc: 'Desde el puente hasta Parque Xcaret' },
+  { nombre: 'Puerto Aventuras', precio: 1350, limiteDesc: 'Desde Parque Xcaret hasta Hotel Dorado Seaside' },
+  { nombre: 'Tulum', precio: 1750, limiteDesc: 'Desde Hotel Dorado Seaside hasta Tulum Centro' },
+  { nombre: 'Aeropuerto Cancún ↔ Aeropuerto Tulum', precio: 3150, limiteDesc: 'Ruta especial entre ambos aeropuertos' },
+];
+
+function renderZonasEditor() {
+  const cont = document.getElementById('zonas-editor');
+  cont.innerHTML = zonasEditor.map((z, i) => `
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;margin-bottom:8px">
+      <div class="row2">
+        <div><label>Nombre de zona</label><input type="text" value="${(z.nombre || '').replace(/"/g, '&quot;')}" onchange="actualizarZona(${i},'nombre',this.value)"></div>
+        <div><label>Precio (MXN)</label><input type="number" value="${z.precio || 0}" onchange="actualizarZona(${i},'precio',Number(this.value))"></div>
+      </div>
+      <label>Límite (referencia interna)</label>
+      <input type="text" value="${(z.limiteDesc || '').replace(/"/g, '&quot;')}" onchange="actualizarZona(${i},'limiteDesc',this.value)">
+      <button class="btn-mini" onclick="quitarZona(${i})" style="margin-top:6px">🗑️ Quitar zona</button>
+    </div>
+  `).join('');
+}
+window.agregarZonaVacia = () => { zonasEditor.push({ nombre: '', precio: 0, limiteDesc: '' }); renderZonasEditor(); };
+window.quitarZona = (i) => { zonasEditor.splice(i, 1); renderZonasEditor(); };
+window.actualizarZona = (i, campo, valor) => { zonasEditor[i][campo] = valor; };
+
+async function cargarTraslados() {
+  const cont = document.getElementById('lista-traslados');
+  try {
+    const snap = await getDocs(collection(db, 'nexora_traslados'));
+    trasladosCache = [];
+    snap.forEach(d => trasladosCache.push({ id: d.id, ...d.data() }));
+
+    if (!trasladosCache.length) {
+      cont.innerHTML = '<div style="color:var(--gray);font-size:13px">Aún no hay servicios de traslado cargados.</div>';
+      if (!zonasEditor.length && !trasladoEditandoId) { zonasEditor = ZONAS_DEFAULT; renderZonasEditor(); }
+      return;
+    }
+
+    cont.innerHTML = trasladosCache.map(t => `
+      <div class="tour-row">
+        <div class="info">
+          <div class="name">🚐 ${t.nombre}</div>
+          <div class="meta">${t.vehiculo || ''} · ${(t.zonas || []).length} zonas · <span class="${t.activo !== false ? 'badge-activo' : 'badge-inactivo'}">${t.activo !== false ? 'Visible' : 'Oculto'}</span></div>
+        </div>
+        <div class="acts">
+          <button onclick="editarTraslado('${t.id}')">Editar</button>
+          <button onclick="borrarTraslado('${t.id}')">Borrar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    cont.innerHTML = '<div class="err" style="display:block">Error al cargar: ' + e.message + '</div>';
+  }
+}
+
+window.editarTraslado = (id) => {
+  const t = trasladosCache.find(x => x.id === id);
+  if (!t) return;
+  trasladoEditandoId = id;
+  document.getElementById('tr-nombre').value = t.nombre || '';
+  document.getElementById('tr-vehiculo').value = t.vehiculo || '';
+  document.getElementById('tr-descripcion').value = t.descripcion || '';
+  document.getElementById('tr-max-pasajeros').value = t.maxPasajeros || 8;
+  document.getElementById('tr-punto-encuentro').value = t.puntoEncuentro || '';
+  document.getElementById('tr-deposito').value = t.depositoPorServicio || 150;
+  document.getElementById('tr-descuento-redondo').value = t.descuentoRedondo || 100;
+  document.getElementById('tr-costo-cambio').value = t.costoCambio || 100;
+  document.getElementById('tr-horas-cambio').value = t.horasMinCambio || 24;
+  document.getElementById('tr-tolerancia-min').value = t.toleranciaMin || 15;
+  document.getElementById('tr-penalidad').value = t.penalidadTardanza || 200;
+  document.getElementById('tr-tolerancia-max').value = t.toleranciaMax || 25;
+  document.getElementById('tr-politicas').value = t.politicas || '';
+  document.getElementById('tr-activo').checked = t.activo !== false;
+  zonasEditor = JSON.parse(JSON.stringify(t.zonas || []));
+  renderZonasEditor();
+  document.getElementById('trasl-form-titulo').textContent = 'Editando: ' + t.nombre;
+  document.getElementById('btn-cancelar-traslado').style.display = 'block';
+  window.scrollTo(0, 0);
+};
+
+function limpiarFormularioTraslado() {
+  document.getElementById('tr-nombre').value = 'Traslados Aeropuerto Cancún';
+  document.getElementById('tr-vehiculo').value = 'Toyota HiAce';
+  document.getElementById('tr-descripcion').value = '';
+  document.getElementById('tr-max-pasajeros').value = 8;
+  document.getElementById('tr-punto-encuentro').value = 'Welcome Bar, terminal de llegadas';
+  document.getElementById('tr-deposito').value = 150;
+  document.getElementById('tr-descuento-redondo').value = 100;
+  document.getElementById('tr-costo-cambio').value = 100;
+  document.getElementById('tr-horas-cambio').value = 24;
+  document.getElementById('tr-tolerancia-min').value = 15;
+  document.getElementById('tr-penalidad').value = 200;
+  document.getElementById('tr-tolerancia-max').value = 25;
+  document.getElementById('tr-politicas').value = '';
+  document.getElementById('tr-activo').checked = true;
+  zonasEditor = ZONAS_DEFAULT.map(z => ({ ...z }));
+  trasladoEditandoId = null;
+  renderZonasEditor();
+  document.getElementById('trasl-form-titulo').textContent = 'Configurar servicio de traslados';
+  document.getElementById('btn-cancelar-traslado').style.display = 'none';
+}
+window.cancelarEdicionTraslado = limpiarFormularioTraslado;
+
+window.guardarTraslado = async () => {
+  const errEl = document.getElementById('trasl-form-err');
+  const okEl = document.getElementById('trasl-form-ok');
+  errEl.textContent = ''; okEl.textContent = '';
+  const btn = document.getElementById('btn-guardar-traslado');
+
+  const nombre = document.getElementById('tr-nombre').value.trim();
+  if (!nombre) { errEl.textContent = 'El nombre del servicio es obligatorio.'; return; }
+  if (!zonasEditor.length) { errEl.textContent = 'Agrega al menos una zona con su tarifa.'; return; }
+  if (zonasEditor.some(z => !z.nombre || !z.precio)) { errEl.textContent = 'Todas las zonas necesitan nombre y precio.'; return; }
+
+  btn.textContent = 'Guardando...'; btn.disabled = true;
+  try {
+    const data = {
+      nombre,
+      vehiculo: document.getElementById('tr-vehiculo').value.trim(),
+      descripcion: document.getElementById('tr-descripcion').value.trim(),
+      maxPasajeros: Number(document.getElementById('tr-max-pasajeros').value) || 8,
+      puntoEncuentro: document.getElementById('tr-punto-encuentro').value.trim(),
+      depositoPorServicio: Number(document.getElementById('tr-deposito').value) || 150,
+      descuentoRedondo: Number(document.getElementById('tr-descuento-redondo').value) || 0,
+      costoCambio: Number(document.getElementById('tr-costo-cambio').value) || 0,
+      horasMinCambio: Number(document.getElementById('tr-horas-cambio').value) || 24,
+      toleranciaMin: Number(document.getElementById('tr-tolerancia-min').value) || 15,
+      penalidadTardanza: Number(document.getElementById('tr-penalidad').value) || 200,
+      toleranciaMax: Number(document.getElementById('tr-tolerancia-max').value) || 25,
+      politicas: document.getElementById('tr-politicas').value.trim(),
+      zonas: zonasEditor,
+      activo: document.getElementById('tr-activo').checked,
+    };
+    const id = trasladoEditandoId || doc(collection(db, 'nexora_traslados')).id;
+    await setDoc(doc(db, 'nexora_traslados', id), data, { merge: true });
+    okEl.textContent = '✓ Servicio guardado correctamente.';
+    limpiarFormularioTraslado();
+    cargarTraslados();
+  } catch (e) {
+    errEl.textContent = e.message || 'Error al guardar.';
+  } finally {
+    btn.textContent = 'Guardar Servicio'; btn.disabled = false;
+  }
+};
+
+window.borrarTraslado = async (id) => {
+  const t = trasladosCache.find(x => x.id === id);
+  if (!confirm(`¿Seguro que quieres borrar "${t?.nombre || 'este servicio'}"? No se puede deshacer.`)) return;
+  await deleteDoc(doc(db, 'nexora_traslados', id));
+  cargarTraslados();
 };
 </script>
 <div style="position:fixed;bottom:4px;left:0;right:0;text-align:center;font-family:'Barlow',sans-serif;font-size:.6rem;letter-spacing:.08em;color:rgba(240,237,232,.15);pointer-events:none;z-index:9998">Build by Ormuz</div>
