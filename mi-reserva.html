@@ -145,14 +145,25 @@ window.buscarReserva = async () => {
     }
 
     const esTour = coleccion === 'nexora_tours_reservas';
-    const nombreProducto = esTour ? r.tourNombre : r.vehiculoNombre;
-    const fechaTexto = esTour ? r.fecha : `${r.fechaInicio} → ${r.fechaFin}`;
-    const totalTexto = esTour ? r.totalMXN : r.totalEstimado;
+    const esVehiculo = coleccion === 'nexora_vehiculos_reservas';
+    const esTraslado = coleccion === 'nexora_traslados_reservas';
+
+    let nombreProducto, fechaTexto, totalTexto, icono;
+    if (esTour) {
+      nombreProducto = r.tourNombre; fechaTexto = r.fecha; totalTexto = r.totalMXN; icono = '🌴';
+    } else if (esVehiculo) {
+      nombreProducto = r.vehiculoNombre; fechaTexto = `${r.fechaInicio} → ${r.fechaFin}`; totalTexto = r.totalEstimado; icono = '🚗';
+    } else {
+      nombreProducto = r.trasladoNombre + (r.redondo ? ' (redondo)' : '');
+      const d = r.datosViaje || {};
+      fechaTexto = d.tipo === 'llegada' ? `${d.fecha} · ${d.hora}` : `${d.fechaVuelo} · ${d.horaVuelo}`;
+      totalTexto = r.totalMXN; icono = '🚐';
+    }
     const estado = r.estado || 'pendiente';
 
     resultadoEl.innerHTML = `
       <span class="badge ${estado}">${estado}</span>
-      <div class="res-titulo">${esTour ? '🌴' : '🚗'} ${nombreProducto}</div>
+      <div class="res-titulo">${icono} ${nombreProducto}</div>
       <div class="res-linea"><span>Folio</span><strong>${folio}</strong></div>
       <div class="res-linea"><span>Fecha</span><strong>${fechaTexto}</strong></div>
       <div class="res-linea"><span>Total</span><strong>$${fmt(totalTexto)} MXN</strong></div>
