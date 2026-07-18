@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Traslados Terrestres — Nexora</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Traslados Terrestres en Cancún — Nexora">
+<meta property="og:description" content="Transporte privado desde el Aeropuerto de Cancún, para 1 a 8 pasajeros, mismo precio. Aparta con anticipo por transferencia.">
+<meta property="og:image" content="https://nexora-tours.vercel.app/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+:root{--navy:#071a26;--navy-mid:#0d2d3f;--teal:#0b9e99;--teal-light:#3ecfc4;--gold:#f5c842;--white:#fff;--gray:#8ab2b0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);overflow-x:hidden}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;flex-wrap:wrap;gap:8px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;text-decoration:none;color:var(--white);}
+.logo span{color:var(--gold);}
+header a.back{color:var(--gray);font-size:13px;text-decoration:none;}
+.header-links{display:flex;gap:16px}
+
+.hero{text-align:center;padding:24px 0 30px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin-bottom:10px;}
+.hero h1 .teal{color:var(--teal-light);}
+.hero p{color:var(--gray);font-size:.95rem;max-width:560px;margin:0 auto;}
+
+.veh-card{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.25);border-radius:16px;overflow:hidden;margin-bottom:24px;}
+.veh-gallery{position:relative;background:#fff;}
+.veh-gallery img{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#fff;}
+.veh-body{padding:24px;}
+.veh-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px;}
+.veh-desc{color:var(--gray);font-size:.88rem;line-height:1.6;margin-bottom:18px;}
+.veh-feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.veh-feat{font-size:.78rem;background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:8px;padding:9px 12px;}
+.book-btn{background:var(--teal);color:#fff;border:none;padding:13px 28px;border-radius:8px;font-family:'Barlow',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;width:100%;margin-top:6px}
+
+.tarifas-tabla{width:100%;border-collapse:collapse;margin-top:6px}
+.tarifas-tabla th{text-align:left;font-size:.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.tarifas-tabla td{padding:10px;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,0.06)}
+.tarifas-tabla td.precio{color:var(--gold);font-weight:700;text-align:right}
+
+details.politicas{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;margin-bottom:24px;font-size:.82rem;color:var(--gray);}
+details.politicas summary{cursor:pointer;color:var(--teal-light);font-weight:700;margin-bottom:8px;}
+details.politicas .pol-item{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;height:100dvh;z-index:200;background:rgba(5,15,22,0.93);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;touch-action:none}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--navy-mid);border:1px solid rgba(11,158,153,0.4);border-radius:16px;padding:32px;max-width:480px;width:100%;transform:translateY(28px);transition:transform .3s;position:relative;max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--gray);font-size:26px;cursor:pointer;line-height:1}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:14px;}
+.tipo-selector{display:flex;gap:8px;margin-bottom:16px}
+.tipo-btn{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:12px 8px;text-align:center;font-size:.74rem;font-weight:700;cursor:pointer;color:var(--gray)}
+.tipo-btn.active{background:rgba(11,158,153,0.15);border-color:var(--teal);color:var(--teal-light)}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:var(--white);font-family:inherit;font-size:16px;}
+.form-group select option{background:var(--navy-mid);color:var(--white)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bloque-direccion{display:none}
+.bloque-direccion.activo{display:block}
+.resumen-box{background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.2);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;}
+.resumen-box .r{display:flex;justify-content:space-between;padding:4px 0;}
+.pickup-calc{background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.25);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.8rem;color:var(--gold);line-height:1.5}
+.transfer-box{background:rgba(255,255,255,0.03);border:1px dashed rgba(11,158,153,0.4);border-radius:8px;padding:16px;font-size:13px;line-height:2;margin-bottom:12px;}
+.transfer-box .r{display:flex;justify-content:space-between;}
+.alert-warning{background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold);}
+.submit-btn{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
+.err{color:#ff6b6b;font-size:12px;min-height:14px;margin-top:6px;}
+.empty{text-align:center;color:var(--gray);padding:60px 20px;}
+
+.lada-select{position:relative;}
+.lada-btn{width:100%;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 10px;color:var(--white);font-family:inherit;font-size:14px;cursor:pointer;}
+.lada-btn img{width:20px;height:15px;object-fit:cover;border-radius:2px;flex-shrink:0;}
+.lada-arrow{margin-left:auto;font-size:10px;color:var(--gray);}
+.lada-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--navy-mid);border:1px solid rgba(255,255,255,0.15);border-radius:8px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+.lada-dropdown.open{display:block;}
+.lada-item{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:14px;color:var(--white);}
+.lada-item:hover{background:rgba(255,255,255,0.06);}
+.lada-item img{width:20px;height:15px;object-fit:cover;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a href="https://www.nexora-travel.com/" class="logo">NEXORA <span>|</span> KAZZAN</a>
+    <div class="header-links">
+      <a href="/mi-reserva.html" class="back">Mi reserva</a>
+      <a href="https://www.nexora-travel.com/#nv-traslados" class="back">← Volver al inicio</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>Traslados <span class="teal">sin complicaciones</span></h1>
+    <p>Transporte privado desde el Aeropuerto de Cancún — 1 a 8 pasajeros, mismo costo. Aparta con anticipo por transferencia.</p>
+  </div>
+
+  <div id="traslados-lista">
+    <div class="empty">Cargando...</div>
+  </div>
+</div>
+
+<!-- Modal de reserva -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modal-titulo">Reservar traslado</h3>
+
+    <div class="tipo-selector">
+      <div class="tipo-btn active" id="tipo-btn-llegada" onclick="cambiarTipo('llegada')">✈️ Aeropuerto → Hotel</div>
+      <div class="tipo-btn" id="tipo-btn-salida" onclick="cambiarTipo('salida')">🏨 Hotel → Aeropuerto</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--gray);cursor:pointer">
+        <input type="checkbox" id="f-redondo" style="width:auto" onchange="actualizarResumen()"> Quiero también el traslado de regreso (ahorra $<span id="ahorro-redondo-txt">100</span> MXN)
+      </label>
+    </div>
+
+    <div class="form-group"><label>Nombre completo del titular</label><input type="text" id="f-name"></div>
+    <div class="form-group"><label>Correo electrónico</label><input type="email" id="f-email"></div>
+
+    <div class="form-group">
+      <label>WhatsApp de contacto</label>
+      <div style="display:grid;grid-template-columns:130px 1fr;gap:8px">
+        <div class="lada-select" id="lada-select-tr">
+          <button type="button" class="lada-btn" onclick="toggleLadaDropdown('tr')">
+            <img id="lada-flag-tr" src="https://flagcdn.com/20x15/mx.png" alt="">
+            <span id="lada-code-tr">MX +52</span>
+            <span class="lada-arrow">▾</span>
+          </button>
+          <div class="lada-dropdown" id="lada-dropdown-tr"></div>
+        </div>
+        <input type="hidden" id="f-whatsapp-lada" value="52">
+        <input type="tel" placeholder="Tu número, sin lada" id="f-whatsapp-numero">
+      </div>
+    </div>
+
+    <!-- Bloque LLEGADA (aeropuerto -> hotel) -->
+    <div class="bloque-direccion activo" id="bloque-llegada">
+      <div class="row2">
+        <div class="form-group"><label>Fecha de llegada</label><input type="date" id="f-fecha-llegada"></div>
+        <div class="form-group"><label>Hora de llegada</label><input type="time" id="f-hora-llegada"></div>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label>Aerolínea</label><input type="text" id="f-aerolinea"></div>
+        <div class="form-group"><label>Número de vuelo</label><input type="text" id="f-vuelo-llegada"></div>
+      </div>
+      <div class="form-group"><label>Hotel destino</label><input type="text" id="f-hotel-destino"></div>
+      <div class="form-group">
+        <label>Zona de tu hotel</label>
+        <select id="f-zona-llegada" onchange="actualizarResumen()"></select>
+      </div>
+      <div class="form-group">
+        <label>¿Traen equipaje documentado?</label>
+        <select id="f-equipaje">
+          <option value="no">No, solo de mano</option>
+          <option value="si">Sí, documentado</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bloque SALIDA (hotel -> aeropuerto) -->
+    <div class="bloque-direccion" id="bloque-salida">
+      <div class="form-group"><label>Hotel de recolección</label><input type="text" id="f-hotel-origen"></div>
+      <div class="form-group">
+        <label>Zona de tu hotel</label>
+        <select id="f-zona-salida" onchange="actualizarResumen()"></select>
+      </div>
+      <div class="row2">
+        <div class="form-group"><label>Fecha del vuelo</label><input type="date" id="f-fecha-vuelo" onchange="actualizarResumen()"></div>
+        <div class="form-group"><label>Hora del vuelo</label><input type="time" id="f-hora-vuelo" onchange="actualizarResumen()"></div>
+      </div>
+      <div class="form-group"><label>Número de vuelo</label><input type="text" id="f-vuelo-salida"></div>
+      <div class="pickup-calc" id="pickup-calc" style="display:none"></div>
+    </div>
+
+    <div class="form-group"><label>Número de pasajeros (máx. 8)</label><input type="number" id="f-pasajeros" min="1" max="8" value="1" onchange="actualizarResumen()"></div>
+
+    <div class="resumen-box" id="resumen-box" style="display:none">
+      <div class="r"><span style="color:var(--gray)">Total estimado</span><strong id="r-total">—</strong></div>
+      <div class="r"><span style="color:var(--gray)">Anticipo a transferir</span><strong id="r-deposito" style="color:var(--gold)">—</strong></div>
+    </div>
+
+    <div class="transfer-box">
+      <div class="r"><span style="color:var(--gray)">Institución</span><strong style="color:var(--teal-light)">BBVA</strong></div>
+      <div class="r"><span style="color:var(--gray)">Beneficiario</span><strong style="color:var(--teal-light)">Membresía Nexora</strong></div>
+      <div class="r"><span style="color:var(--gray)">Tarjeta</span><strong style="letter-spacing:.06em;color:var(--gold)">4152 3141 9214 8651</strong></div>
+      <div class="r"><span style="color:var(--gray)">Referencia</span><strong style="color:var(--gold)">Tu nombre completo</strong></div>
+    </div>
+    <div class="alert-warning" style="margin-bottom:14px">Una vez pagado el anticipo no hay cancelaciones ni devoluciones. El saldo se cubre 24 horas antes de tu traslado (o del primero, si es redondo) — si no se cubre a tiempo, se cancela automáticamente y se pierde el anticipo.</div>
+
+    <div class="form-group">
+      <label>Comprobante de transferencia (del anticipo)</label>
+      <input type="file" id="f-comprobante" accept="image/*,.pdf">
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitReserva()">Confirmar Mi Reserva</button>
+    <div class="err" id="comprobante-err"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, doc, addDoc, setDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJR13NWfWBURGZZtUhzA0OVjm3nSxCR28",
+  authDomain: "nexora-club.firebaseapp.com",
+  projectId: "nexora-club",
+  storageBucket: "nexora-club.firebasestorage.app",
+  messagingSenderId: "651071612444",
+  appId: "1:651071612444:web:86bb7b36b1446220e661d9"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let TRASLADOS = [];
+let trasladoActual = null;
+let tipoActual = 'llegada';
+
+// Estimado de traslado hacia el aeropuerto por zona, en minutos — solo referencia
+// para prellenar la hora de pick-up sugerida en el formulario web. Siempre redondea
+// hacia arriba por seguridad; Fred hace el cálculo fino y real en el chat.
+const TIEMPO_ESTIMADO_ZONA = {
+  'Cancún Centro / Zona Hotelera': 30,
+  'Costa Mujeres': 45,
+  'Puerto Morelos': 40,
+  'Playa del Carmen': 55,
+  'Puerto Aventuras': 70,
+  'Tulum': 85,
+};
+const MINUTOS_ANTICIPACION_VUELO = 135; // 2h15
+
+function fmt(n) { return (n || 0).toLocaleString('es-MX'); }
+
+function plantillaTraslado(t) {
+  const feats = ['Hasta 8 pasajeros, mismo precio', 'Vehículo privado, sin compartir', 'Ideal si llevas equipaje', 'Aparta con anticipo, paga el resto después'];
+  const zonasFilas = (t.zonas || []).map(z => `<tr><td>${z.nombre}</td><td class="precio">$${fmt(z.precio)} MXN</td></tr>`).join('');
+  const politicasHtml = (t.politicas || '').split('\n').filter(Boolean).map(l => `<div class="pol-item">${l}</div>`).join('');
+
+  return `
+  <div class="veh-card">
+    <div class="veh-body">
+      <div class="veh-name">🚐 ${t.nombre}</div>
+      <p class="veh-desc">${t.descripcion || ''}</p>
+      <div class="veh-feats">${feats.map(f => `<div class="veh-feat">${f}</div>`).join('')}</div>
+      <table class="tarifas-tabla">
+        <thead><tr><th>Zona</th><th style="text-align:right">Tarifa</th></tr></thead>
+        <tbody>${zonasFilas}</tbody>
+      </table>
+      <button class="book-btn" onclick="abrirModalTraslado('${t.id}')">Reservar mi traslado →</button>
+    </div>
+  </div>
+  <details class="politicas">
+    <summary>▸ Ver políticas — ${t.nombre}</summary>
+    ${politicasHtml}
+  </details>`;
+}
+
+async function cargarTraslados() {
+  const cont = document.getElementById('traslados-lista');
+  try {
+    const snap = await getDocs(collection(db, 'nexora_traslados'));
+    TRASLADOS = [];
+    snap.forEach(d => { const data = d.data(); if (data.activo !== false) TRASLADOS.push({ id: d.id, ...data }); });
+    if (!TRASLADOS.length) { cont.innerHTML = '<div class="empty">Muy pronto traslados disponibles.</div>'; return; }
+    cont.innerHTML = TRASLADOS.map(plantillaTraslado).join('');
+  } catch (e) {
+    cont.innerHTML = '<div class="empty">No se pudieron cargar los traslados. Intenta recargar.</div>';
+  }
+}
+cargarTraslados();
+
+window.abrirModalTraslado = (id) => {
+  trasladoActual = TRASLADOS.find(t => t.id === id);
+  if (!trasladoActual) return;
+  document.getElementById('modal-titulo').textContent = 'Reservar ' + trasladoActual.nombre;
+
+  const zonasOpts = (trasladoActual.zonas || []).map(z => `<option value="${z.nombre}">${z.nombre} — $${fmt(z.precio)} MXN</option>`).join('');
+  document.getElementById('f-zona-llegada').innerHTML = zonasOpts;
+  document.getElementById('f-zona-salida').innerHTML = zonasOpts;
+  document.getElementById('ahorro-redondo-txt').textContent = fmt(trasladoActual.descuentoRedondo || 100);
+
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  const minFecha = t.toISOString().split('T')[0];
+  document.getElementById('f-fecha-llegada').min = minFecha;
+  document.getElementById('f-fecha-vuelo').min = minFecha;
+
+  document.getElementById('resumen-box').style.display = 'none';
+  document.getElementById('comprobante-err').textContent = '';
+  window.cambiarTipo('llegada');
+  document.getElementById('modal-overlay').classList.add('open');
+  lockBodyScroll();
+};
+
+window.cambiarTipo = (tipo) => {
+  tipoActual = tipo;
+  document.getElementById('tipo-btn-llegada').classList.toggle('active', tipo === 'llegada');
+  document.getElementById('tipo-btn-salida').classList.toggle('active', tipo === 'salida');
+  document.getElementById('bloque-llegada').classList.toggle('activo', tipo === 'llegada');
+  document.getElementById('bloque-salida').classList.toggle('activo', tipo === 'salida');
+  actualizarResumen();
+};
+
+function calcularPickup() {
+  const fechaVuelo = document.getElementById('f-fecha-vuelo').value;
+  const horaVuelo = document.getElementById('f-hora-vuelo').value;
+  const zona = document.getElementById('f-zona-salida').value;
+  const calcEl = document.getElementById('pickup-calc');
+  if (!fechaVuelo || !horaVuelo || !zona) { calcEl.style.display = 'none'; return; }
+
+  const vuelo = new Date(`${fechaVuelo}T${horaVuelo}:00`);
+  const minutosTraslado = TIEMPO_ESTIMADO_ZONA[zona] || 60;
+  const minutosTotales = MINUTOS_ANTICIPACION_VUELO + minutosTraslado;
+  const pickup = new Date(vuelo.getTime() - minutosTotales * 60000);
+
+  const horaPickupStr = pickup.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+  calcEl.style.display = 'block';
+  calcEl.innerHTML = `⏱️ <strong>Te recogemos aprox. a las ${horaPickupStr}</strong><br>Calculado para que llegues 2h15 antes de tu vuelo, más el tiempo estimado de traslado desde tu zona (~${minutosTraslado} min). Si tu hotel está en un punto más alejado dentro de la zona, escríbenos por WhatsApp para ajustar la hora exacta.`;
+}
+
+window.actualizarResumen = () => {
+  if (!trasladoActual) return;
+  const zonaSelect = tipoActual === 'llegada' ? document.getElementById('f-zona-llegada') : document.getElementById('f-zona-salida');
+  const zonaNombre = zonaSelect.value;
+  const zona = (trasladoActual.zonas || []).find(z => z.nombre === zonaNombre);
+  const redondo = document.getElementById('f-redondo').checked;
+
+  if (tipoActual === 'salida') calcularPickup();
+  else document.getElementById('pickup-calc').style.display = 'none';
+
+  if (!zona) { document.getElementById('resumen-box').style.display = 'none'; return; }
+
+  let total = zona.precio;
+  let deposito = trasladoActual.depositoPorServicio || 150;
+  if (redondo) {
+    total = total * 2 - (trasladoActual.descuentoRedondo || 100);
+    deposito = deposito * 2;
+  }
+
+  document.getElementById('r-total').textContent = '$' + fmt(total) + ' MXN';
+  document.getElementById('r-deposito').textContent = '$' + fmt(deposito) + ' MXN';
+  document.getElementById('resumen-box').style.display = 'block';
+};
+
+let scrollYGuardado = 0;
+function lockBodyScroll() {
+  scrollYGuardado = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollYGuardado}px`;
+  document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%';
+}
+function unlockBodyScroll() {
+  document.body.style.position = ''; document.body.style.top = '';
+  document.body.style.left = ''; document.body.style.right = ''; document.body.style.width = '';
+  window.scrollTo(0, scrollYGuardado);
+}
+window.closeModal = () => { document.getElementById('modal-overlay').classList.remove('open'); unlockBodyScroll(); };
+window.handleOverlayClick = (e) => { if (e.target.id === 'modal-overlay') closeModal(); };
+
+function generarFolio() { return 'TRL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(); }
+
+function comprimirImagenSiEsNecesario(file) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/') || file.size <= 1.8 * 1024 * 1024) { resolve(file); return; }
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX_LADO = 2200; let { width, height } = img;
+      if (width > height && width > MAX_LADO) { height = height * (MAX_LADO / width); width = MAX_LADO; }
+      else if (height > MAX_LADO) { width = width * (MAX_LADO / height); height = MAX_LADO; }
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.85);
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+const PAISES_LADA = [
+  { iso: 'mx', code: '52', label: 'MX +52' }, { iso: 'us', code: '1', label: 'US +1' },
+  { iso: 'ca', code: '1', label: 'CA +1' }, { iso: 'es', code: '34', label: 'ES +34' },
+  { iso: 'ar', code: '54', label: 'AR +54' }, { iso: 'co', code: '57', label: 'CO +57' },
+  { iso: 'pe', code: '51', label: 'PE +51' }, { iso: 'cl', code: '56', label: 'CL +56' },
+  { iso: 'ec', code: '593', label: 'EC +593' }, { iso: 've', code: '58', label: 'VE +58' },
+  { iso: 'br', code: '55', label: 'BR +55' }, { iso: 'gb', code: '44', label: 'GB +44' },
+  { iso: 'fr', code: '33', label: 'FR +33' }, { iso: 'de', code: '49', label: 'DE +49' },
+  { iso: 'it', code: '39', label: 'IT +39' },
+];
+function initLadaSelector(sufijo) {
+  const dropdown = document.getElementById('lada-dropdown-' + sufijo);
+  if (!dropdown) return;
+  dropdown.innerHTML = PAISES_LADA.map(p =>
+    `<div class="lada-item" onclick="seleccionarLada('${sufijo}','${p.iso}','${p.code}','${p.label}')"><img src="https://flagcdn.com/20x15/${p.iso}.png" alt=""> ${p.label}</div>`
+  ).join('');
+}
+window.toggleLadaDropdown = (sufijo) => {
+  document.querySelectorAll('.lada-dropdown').forEach(d => { if (d.id !== 'lada-dropdown-' + sufijo) d.classList.remove('open'); });
+  document.getElementById('lada-dropdown-' + sufijo).classList.toggle('open');
+};
+window.seleccionarLada = (sufijo, iso, code, label) => {
+  document.getElementById('lada-flag-' + sufijo).src = `https://flagcdn.com/20x15/${iso}.png`;
+  document.getElementById('lada-code-' + sufijo).textContent = label;
+  document.getElementById('f-whatsapp-lada').value = code;
+  document.getElementById('lada-dropdown-' + sufijo).classList.remove('open');
+};
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lada-select')) document.querySelectorAll('.lada-dropdown').forEach(d => d.classList.remove('open'));
+});
+initLadaSelector('tr');
+
+window.submitReserva = async () => {
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const whatsappLada = document.getElementById('f-whatsapp-lada').value;
+  const whatsappNumero = document.getElementById('f-whatsapp-numero').value.trim().replace(/[^0-9]/g, '');
+  const whatsapp = whatsappLada + whatsappNumero;
+  const pasajeros = parseInt(document.getElementById('f-pasajeros').value) || 1;
+  const redondo = document.getElementById('f-redondo').checked;
+  const comprobanteErr = document.getElementById('comprobante-err');
+  comprobanteErr.textContent = '';
+
+  if (!name || !email || !whatsappNumero) { alert('Completa tus datos de contacto antes de continuar.'); return; }
+  if (whatsappNumero.length < 7) { comprobanteErr.textContent = 'Ingresa un número de WhatsApp válido.'; return; }
+  if (pasajeros < 1 || pasajeros > 8) { comprobanteErr.textContent = 'El máximo son 8 pasajeros.'; return; }
+
+  let datosViaje = { tipo: tipoActual };
+  if (tipoActual === 'llegada') {
+    const fecha = document.getElementById('f-fecha-llegada').value;
+    const hora = document.getElementById('f-hora-llegada').value;
+    const aerolinea = document.getElementById('f-aerolinea').value.trim();
+    const vuelo = document.getElementById('f-vuelo-llegada').value.trim();
+    const hotelDestino = document.getElementById('f-hotel-destino').value.trim();
+    const zona = document.getElementById('f-zona-llegada').value;
+    const equipaje = document.getElementById('f-equipaje').value;
+    if (!fecha || !hora || !aerolinea || !vuelo || !hotelDestino || !zona) { alert('Completa todos los datos de tu llegada.'); return; }
+    datosViaje = { ...datosViaje, fecha, hora, aerolinea, vuelo, hotelDestino, zona, equipaje };
+  } else {
+    const hotelOrigen = document.getElementById('f-hotel-origen').value.trim();
+    const zona = document.getElementById('f-zona-salida').value;
+    const fechaVuelo = document.getElementById('f-fecha-vuelo').value;
+    const horaVuelo = document.getElementById('f-hora-vuelo').value;
+    const vuelo = document.getElementById('f-vuelo-salida').value.trim();
+    if (!hotelOrigen || !zona || !fechaVuelo || !horaVuelo || !vuelo) { alert('Completa todos los datos de tu salida.'); return; }
+    datosViaje = { ...datosViaje, hotelOrigen, zona, fechaVuelo, horaVuelo, vuelo };
+  }
+
+  const comprobanteFile = document.getElementById('f-comprobante').files[0];
+  if (!comprobanteFile) { comprobanteErr.textContent = 'Sube tu comprobante de transferencia.'; return; }
+
+  const zonaObj = (trasladoActual.zonas || []).find(z => z.nombre === datosViaje.zona);
+  let total = zonaObj.precio;
+  let deposito = trasladoActual.depositoPorServicio || 150;
+  if (redondo) { total = total * 2 - (trasladoActual.descuentoRedondo || 100); deposito = deposito * 2; }
+
+  const folio = generarFolio();
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Preparando comprobante...'; btn.disabled = true;
+
+  const comprimido = await comprimirImagenSiEsNecesario(comprobanteFile);
+  if (comprimido.size > 3 * 1024 * 1024) {
+    comprobanteErr.textContent = 'Tu archivo sigue pesando demasiado incluso comprimido.';
+    btn.textContent = 'Confirmar Mi Reserva'; btn.disabled = false; return;
+  }
+
+  btn.textContent = 'Subiendo comprobante...';
+  try {
+    const base64 = await fileToBase64(comprimido);
+    const respSubida = await fetch('/api/subir-comprobante', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folio, nombreArchivo: comprimido.name, contentType: comprimido.type, base64 }),
+    });
+    let resultSubida;
+    try { resultSubida = await respSubida.json(); }
+    catch (e) { throw new Error('El servidor no respondió correctamente (código ' + respSubida.status + ').'); }
+    if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante');
+
+    btn.textContent = 'Guardando reserva...';
+    const ahora = new Date();
+    const expira = new Date(ahora.getTime() + 3 * 60 * 60 * 1000);
+
+    const refCreada = await addDoc(collection(db, 'nexora_traslados_reservas'), {
+      folio, trasladoId: trasladoActual.id, trasladoNombre: trasladoActual.nombre,
+      nombre: name, email, whatsapp, pasajeros, redondo,
+      datosViaje, zonaNombre: datosViaje.zona,
+      totalMXN: total, deposito, saldo: total - deposito,
+      comprobanteUrl: resultSubida.url, estado: 'pendiente',
+      expira: expira.toISOString(), creado: serverTimestamp(),
+    });
+    try { await setDoc(doc(db, 'reservas_index', folio), { coleccion: 'nexora_traslados_reservas', docId: refCreada.id }); } catch (e) {}
+
+    btn.textContent = 'Enviando confirmación...';
+    try {
+      await fetch('/api/enviar-confirmacion-traslado', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          folio, trasladoNombre: trasladoActual.nombre, nombre: name, email, whatsapp,
+          pasajeros, redondo, datosViaje, totalMXN: fmt(total), deposito, comprobanteUrl: resultSubida.url,
+        }),
+      });
+    } catch (e) { console.warn('Error enviando correos:', e); }
+
+    document.getElementById('modal').innerHTML = `
+      <div style="padding:10px 4px">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:52px;margin-bottom:12px">🚐</div>
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:30px;margin-bottom:4px">¡Solicitud enviada!</h3>
+          <p style="color:var(--teal-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase">${trasladoActual.nombre}</p>
+        </div>
+        <div style="background:rgba(11,158,153,0.1);border:1px solid var(--teal);border-radius:10px;padding:14px;text-align:center;margin-bottom:16px">
+          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Tu folio</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--teal-light);letter-spacing:1px">${folio}</div>
+        </div>
+        <div class="alert-warning" style="margin-bottom:16px">Validamos tu comprobante en un máximo de <strong>3 horas</strong>.</div>
+        <a href="/mi-reserva.html?folio=${encodeURIComponent(folio)}" target="_blank" style="display:block;text-align:center;background:transparent;color:var(--teal-light);border:1px solid var(--teal-light);border-radius:8px;padding:12px;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;text-decoration:none;margin-bottom:10px">Ver el estado de mi reserva</a>
+        <button onclick="closeModal()" class="submit-btn">Cerrar</button>
+      </div>`;
+  } catch (err) {
+    comprobanteErr.textContent = err.message || 'Ocurrió un error. Intenta de nuevo.';
+    btn.textContent = 'Confirmar Mi Reserva'; btn.disabled = false;
+  }
+};
+</script>
+<div style="position:fixed;bottom:4px;left:0;right:0;text-align:center;font-family:'Barlow',sans-serif;font-size:.6rem;letter-spacing:.08em;color:rgba(240,237,232,.15);pointer-events:none;z-index:9998">Build by Ormuz</div>
+</body>
+</html>
