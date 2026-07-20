@@ -186,7 +186,7 @@ footer p{color:var(--gray);font-size:12px}
     </div>
     <div class="how-steps">
       <div class="step"><div class="step-num">1</div><h4>Choose Your Tour</h4><p>Pick from Isla Mujeres, Xcaret Plus, or Xel-Há. Select your date and number of guests.</p></div>
-      <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with a fixed deposit of $100 MXN per booking, via bank transfer.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Pay the Deposit</h4><p>Secure your spot with a $100 MXN deposit per person, via bank transfer.</p></div>
       <div class="step"><div class="step-num">3</div><h4>Enjoy & Pay the Rest</h4><p>We pick you up at your hotel. Pay the balance <strong>in cash on board</strong> and enjoy paradise!</p></div>
     </div>
   </div>
@@ -233,7 +233,7 @@ footer p{color:var(--gray);font-size:12px}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
       <div style="background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:14px;text-align:center;">
         <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Deposit by transfer</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;">$100 MXN</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;" id="ms-deposit">—</div>
         <div style="font-size:10px;color:var(--gray);margin-top:3px;">Secures your spot</div>
       </div>
       <div style="background:rgba(11,158,153,0.08);border:1px solid rgba(11,158,153,0.3);border-radius:10px;padding:14px;text-align:center;">
@@ -269,7 +269,7 @@ const WA_NEXORA = '529982168410';
 const TASA_CAMBIO = 18.50;
 var PRICES = {};
 var USD_PRICES = {};
-const DEPOSIT = 100;
+function calcularDeposito(adults, kids) { return (adults + kids) * 100; }
 let currentTour='', currentNac='ext';
 function fmt(n){ return n.toLocaleString('en-US'); }
 function setNacionalidad(type){
@@ -287,11 +287,13 @@ function updateSummary(){
   const p=PRICES[currentTour][currentNac];
   const pu=USD_PRICES[currentTour][currentNac];
   const totalMXN=(adults*p.adult)+(kids*p.kid);
-  const balance=totalMXN-DEPOSIT;
+  const deposito=calcularDeposito(adults,kids);
+  const balance=totalMXN-deposito;
   document.getElementById('ms-price-adult').textContent=`$${fmt(p.adult)} MXN (≈ $${pu.adult} USD)`;
   document.getElementById('ms-price-kid').textContent=kids>0?`$${fmt(p.kid)} MXN (≈ $${pu.kid} USD)`:'—';
   document.getElementById('ms-guests').textContent=adults+' adult(s)'+(kids>0?', '+kids+' child(ren)':'');
   document.getElementById('ms-total').textContent=`$${fmt(totalMXN)} MXN`;
+  document.getElementById('ms-deposit').textContent=`$${fmt(deposito)} MXN`;
   document.getElementById('ms-balance').textContent=`$${fmt(balance)} MXN`;
 }
 function switchTab(btn,gridId){
@@ -344,11 +346,12 @@ async function submitBooking(){
   if(!name||!email||!date||!hotel){ alert('Please fill in all fields before continuing.'); return; }
   const p=PRICES[currentTour][currentNac];
   const totalMXN=(adults*p.adult)+(kids*p.kid);
-  const balance=totalMXN-DEPOSIT;
+  const deposito=calcularDeposito(adults,kids);
+  const balance=totalMXN-deposito;
   const tourLabel=document.getElementById('modal-tour-name').textContent;
   const guests = adults+' adult(s)'+(kids>0?', '+kids+' child(ren)':'');
 
-  const waMessage = `Hi, I'd like to confirm my booking:\n\nTour: ${tourLabel}\nName: ${name}\nEmail: ${email}\nDate: ${date}\nHotel/Pick-up: ${hotel}\nGuests: ${guests}\nTotal: $${fmt(totalMXN)} MXN\nDeposit: $${DEPOSIT} MXN (bank transfer)\nBalance on board: $${fmt(balance)} MXN\n\nAttaching my transfer receipt.`;
+  const waMessage = `Hi, I'd like to confirm my booking:\n\nTour: ${tourLabel}\nName: ${name}\nEmail: ${email}\nDate: ${date}\nHotel/Pick-up: ${hotel}\nGuests: ${guests}\nTotal: $${fmt(totalMXN)} MXN\nDeposit: $${fmt(deposito)} MXN (bank transfer)\nBalance on board: $${fmt(balance)} MXN\n\nAttaching my transfer receipt.`;
   window.open(`https://wa.me/${WA_NEXORA}?text=${encodeURIComponent(waMessage)}`, '_blank');
 
   document.getElementById('modal').innerHTML=`
@@ -365,7 +368,7 @@ async function submitBooking(){
         <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--gray)">Tour total</span><strong>$${fmt(totalMXN)} MXN</strong></div>
       </div>
       <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--gold);text-align:center;margin-bottom:16px;line-height:1.6">
-        WhatsApp opened with your booking. Send your <strong>transfer receipt</strong> ($${DEPOSIT} MXN) there to confirm your spot — and don't forget <strong>$${fmt(balance)} MXN in cash</strong> on tour day.
+        WhatsApp opened with your booking. Send your <strong>transfer receipt</strong> ($${fmt(deposito)} MXN) there to confirm your spot — and don't forget <strong>$${fmt(balance)} MXN in cash</strong> on tour day.
       </div>
       <button onclick="closeModal()" style="width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Close</button>
     </div>`;
@@ -419,7 +422,7 @@ function plantillaTour(id, t) {
           <div class="price-item"><div class="who">Adult</div><div class="amount">$${fmt(t.precios.nac.adulto)} <span>MXN</span></div><div class="equiv">≈ USD $${usdNacAd}</div></div>
           <div class="price-item"><div class="who">Child (up to 11)</div><div class="amount">$${fmt(t.precios.nac.menor)} <span>MXN</span></div><div class="equiv">≈ USD $${usdNacMe}</div></div>
         </div>
-        <div class="price-note">⚡ Reserve with a fixed deposit of <strong>$100 MXN</strong> — Pay the rest <strong>in cash on board</strong>!</div>
+        <div class="price-note">⚡ Reserve with a <strong>$100 MXN deposit per person</strong> — Pay the rest <strong>in cash on board</strong>!</div>
         <div class="age-note">* Children 12+ are charged adult price · Exchange rate: $18.50 MXN/USD</div>
       </div>
       <button class="book-btn" onclick="openModal('${t.nombre.replace(/'/g, "\\'")}','${id}')">Reserve My Spot →</button>
