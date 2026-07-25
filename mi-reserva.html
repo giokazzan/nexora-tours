@@ -91,10 +91,10 @@ p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
   <p class="sub">Escribe tu apellido y el folio que te dimos al confirmar tu reserva de tour o vehículo.</p>
 
   <div class="form-group" style="margin-bottom:12px">
-    <input type="text" id="f-apellido" placeholder="Tu apellido" style="text-transform:none;letter-spacing:normal;text-align:left" onkeydown="if(event.key==='Enter')buscarReserva()">
+    <input type="text" id="f-apellido" placeholder="Tu apellido" onkeydown="if(event.key==='Enter')buscarReserva()">
   </div>
   <div class="form-group">
-    <input type="text" id="f-folio" placeholder="Ej: TUR-ABC123-XYZ9" onkeydown="if(event.key==='Enter')buscarReserva()">
+    <input type="text" id="f-folio" placeholder="Ej: TUR-ABC123 · VEH-ABC123 · TRL-ABC123 · NXR-0000-XXX-X" onkeydown="if(event.key==='Enter')buscarReserva()">
   </div>
   <button class="btn" id="btn-buscar" onclick="buscarReserva()">Buscar mi reserva</button>
   <div class="err" id="err-msg"></div>
@@ -140,7 +140,7 @@ function normalizar(txt) {
 window.buscarReserva = async () => {
   const folioInput = document.getElementById('f-folio');
   const apellidoInput = document.getElementById('f-apellido');
-  const folio = folioInput.value.trim().toUpperCase();
+  const folio = folioInput.value.trim().toUpperCase().replace(/[^A-Z0-9\-]/g, '');
   const apellido = normalizar(apellidoInput.value);
   const errEl = document.getElementById('err-msg');
   const resultadoEl = document.getElementById('resultado');
@@ -167,10 +167,9 @@ window.buscarReserva = async () => {
 
     const r = resSnap.data();
 
-    // Verificación estilo Volaris: el apellido debe aparecer en el nombre registrado
+    // Verificación estilo Volaris: el apellido (o nombre+apellido) debe aparecer dentro del nombre registrado
     const nombreGuardado = normalizar(r.nombre);
-    const palabrasNombre = nombreGuardado.split(/\s+/);
-    if (!palabrasNombre.includes(apellido)) {
+    if (!nombreGuardado.includes(apellido)) {
       errEl.textContent = 'No encontramos una reserva con esos datos. Revisa que el folio y el apellido estén bien escritos.';
       return;
     }
