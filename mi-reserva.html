@@ -47,6 +47,37 @@ p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
 .topnav{position:fixed;top:20px;left:20px;}
 .topnav a{color:var(--gray);font-size:.82rem;text-decoration:none;}
 .topnav a:hover{color:var(--teal-light);}
+
+/* ── Pase de abordar de hotel ── */
+.hpase{background:#fff;color:#161514;border-radius:14px;overflow:hidden;margin-top:20px;}
+.hpase-top{padding:20px 22px 16px;}
+.hpase-hotel{font-family:'Bebas Neue',Arial,sans-serif;font-size:22px;line-height:1.15;}
+.hpase-badge{display:inline-block;margin-top:6px;padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:rgba(93,207,142,.12);color:#2e8b57;}
+.hpase-ruta{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:#faf9f5;}
+.hpase-punto .lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#8a8580;}
+.hpase-punto .val{font-family:'Bebas Neue',Arial,sans-serif;font-size:19px;color:#161514;}
+.hpase-punto.der{text-align:right;}
+.hpase-perf{height:0;border-top:2px dashed #d8d3c5;margin:0 20px;position:relative;}
+.hpase-perf::before,.hpase-perf::after{content:'';position:absolute;top:-10px;width:20px;height:20px;border-radius:50%;background:var(--navy-mid);}
+.hpase-perf::before{left:-30px;}
+.hpase-perf::after{right:-30px;}
+.hpase-detalles{padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;}
+.hpase-campo .lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#8a8580;margin-bottom:2px;}
+.hpase-campo .val{font-size:13.5px;font-weight:600;}
+.hpase-campo.full{grid-column:1/-1;}
+.hpase-pago{background:#0a1420;color:#fff;padding:18px 22px;}
+.hpase-pago .fila{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;}
+.hpase-pago .fila span:first-child{color:#8a93a8;}
+.hpase-pago .fila.saldo strong{color:#f5c842;}
+
+.abono-toggle{width:100%;background:transparent;border:1.5px solid var(--teal-light);color:var(--teal-light);border-radius:8px;padding:12px;font-weight:700;font-size:13px;cursor:pointer;margin-top:16px;}
+.abono-form{margin-top:14px;text-align:left;}
+.abono-form label{display:block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:5px;margin-top:12px;}
+.abono-form input[type="number"],.abono-form input[type="file"]{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#fff;font-size:15px;font-family:inherit;}
+.transfer-box{background:rgba(255,255,255,.03);border:1px dashed rgba(11,158,153,.4);border-radius:8px;padding:14px;font-size:12.5px;line-height:1.9;margin-top:12px;}
+.transfer-box .r{display:flex;justify-content:space-between;}
+.transfer-box .r span:first-child{color:var(--gray);}
+.transfer-box .r strong{color:var(--teal-light);}
 </style>
 </head>
 <body>
@@ -75,7 +106,7 @@ p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJR13NWfWBURGZZtUhzA0OVjm3nSxCR28",
@@ -147,6 +178,13 @@ window.buscarReserva = async () => {
     const esTour = coleccion === 'nexora_tours_reservas';
     const esVehiculo = coleccion === 'nexora_vehiculos_reservas';
     const esTraslado = coleccion === 'nexora_traslados_reservas';
+    const esHotel = coleccion === 'nexora_hoteles_reservas';
+
+    if (esHotel) {
+      renderPaseHotel(r, folio, docId);
+      resultadoEl.style.display = 'block';
+      return;
+    }
 
     let nombreProducto, fechaTexto, totalTexto, icono;
     if (esTour) {
@@ -175,6 +213,131 @@ window.buscarReserva = async () => {
     errEl.textContent = 'Ocurrió un error buscando tu reserva. Intenta de nuevo en un momento.';
   } finally {
     btn.disabled = false; btn.textContent = 'Buscar mi reserva';
+  }
+};
+
+function renderPaseHotel(r, folio, docId) {
+  const resultadoEl = document.getElementById('resultado');
+  const saldo = r.saldo || 0;
+  resultadoEl.innerHTML = `
+    <div class="hpase">
+      <div class="hpase-top">
+        <div class="hpase-hotel">🏨 ${r.hotel || ''}</div>
+        <span class="hpase-badge">Reserva confirmada</span>
+      </div>
+      <div class="hpase-ruta">
+        <div class="hpase-punto"><div class="lbl">Check-in</div><div class="val">${r.checkIn || '—'}</div></div>
+        <div style="color:#c9a84c;font-size:18px">→</div>
+        <div class="hpase-punto der"><div class="lbl">Check-out</div><div class="val">${r.checkOut || '—'}</div></div>
+      </div>
+      <div class="hpase-perf"></div>
+      <div class="hpase-detalles">
+        <div class="hpase-campo full"><div class="lbl">Titular</div><div class="val">${r.cliente || ''}</div></div>
+        <div class="hpase-campo"><div class="lbl">Habitación</div><div class="val">${r.habitacion || '—'}</div></div>
+        <div class="hpase-campo"><div class="lbl">Huéspedes</div><div class="val">${r.adultos||1} adulto(s)${r.menores?', '+r.menores+' menor(es)':''}</div></div>
+        <div class="hpase-campo full"><div class="lbl">Folio</div><div class="val">${folio}</div></div>
+      </div>
+      <div class="hpase-pago">
+        <div class="fila"><span>Total</span><strong>$${fmt(r.total)} ${r.moneda||'MXN'}</strong></div>
+        <div class="fila"><span>Pagado</span><strong>$${fmt(r.anticipo)} ${r.moneda||'MXN'}</strong></div>
+        <div class="fila saldo"><span>Saldo pendiente</span><strong>$${fmt(saldo)} ${r.moneda||'MXN'}</strong></div>
+        ${r.fechaLimite ? `<div class="fila"><span>Fecha límite</span><strong>${r.fechaLimite}</strong></div>` : ''}
+      </div>
+    </div>
+  `;
+
+  if (saldo > 0) {
+    resultadoEl.innerHTML += `
+      <button class="abono-toggle" id="btn-abono-toggle" onclick="mostrarFormAbono('${docId}', ${saldo})">💳 Hacer un abono</button>
+      <div id="abono-form-wrap"></div>
+    `;
+  }
+}
+
+window.mostrarFormAbono = (docId, saldoMax) => {
+  document.getElementById('btn-abono-toggle').style.display = 'none';
+  document.getElementById('abono-form-wrap').innerHTML = `
+    <div class="abono-form">
+      <label>¿Cuánto quieres abonar? (máximo $${fmt(saldoMax)})</label>
+      <input type="number" id="ab-monto" max="${saldoMax}" min="1" placeholder="Ej: 5000">
+      <div class="transfer-box">
+        <div class="r"><span>Institución</span><strong>BBVA</strong></div>
+        <div class="r"><span>Beneficiario</span><strong>Membresía Nexora</strong></div>
+        <div class="r"><span>Tarjeta</span><strong>4152 3141 9214 8651</strong></div>
+      </div>
+      <label>Comprobante de transferencia</label>
+      <input type="file" id="ab-comprobante" accept="image/*,.pdf">
+      <button class="btn" id="ab-submit-btn" style="margin-top:16px" onclick="enviarAbono('${docId}', ${saldoMax})">Enviar abono</button>
+      <div class="err" id="ab-err"></div>
+    </div>
+  `;
+};
+
+function comprimirImagenAbono(file) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/') || file.size <= 1.8 * 1024 * 1024) { resolve(file); return; }
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 2200; let { width, height } = img;
+      if (width > height && width > MAX) { height = height * (MAX / width); width = MAX; }
+      else if (height > MAX) { width = width * (MAX / height); height = MAX; }
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.85);
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+function fileToBase64Abono(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+window.enviarAbono = async (docId, saldoMax) => {
+  const monto = parseFloat(document.getElementById('ab-monto').value);
+  const file = document.getElementById('ab-comprobante').files[0];
+  const errEl = document.getElementById('ab-err');
+  const btn = document.getElementById('ab-submit-btn');
+  errEl.textContent = '';
+
+  if (!monto || monto <= 0) { errEl.textContent = 'Ingresa un monto válido.'; return; }
+  if (monto > saldoMax) { errEl.textContent = `El máximo a abonar es $${fmt(saldoMax)}.`; return; }
+  if (!file) { errEl.textContent = 'Sube tu comprobante de transferencia.'; return; }
+
+  btn.disabled = true; btn.textContent = 'Subiendo...';
+  try {
+    const comprimido = await comprimirImagenAbono(file);
+    const base64 = await fileToBase64Abono(comprimido);
+    const folioTmp = 'ABN-' + Date.now().toString(36).toUpperCase();
+
+    const respSubida = await fetch('/api/subir-comprobante', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folio: folioTmp, nombreArchivo: comprimido.name, contentType: comprimido.type, base64 }),
+    });
+    const resultSubida = await respSubida.json();
+    if (!resultSubida.success) throw new Error(resultSubida.error || 'No se pudo subir el comprobante.');
+
+    await updateDoc(doc(db, 'nexora_hoteles_reservas', docId), {
+      abonosPendientes: arrayUnion({
+        monto, comprobanteUrl: resultSubida.url, fecha: new Date().toISOString(), estado: 'pendiente',
+      }),
+    });
+
+    document.getElementById('abono-form-wrap').innerHTML = `
+      <div class="mensaje-estado pendiente" style="margin-top:14px">⏳ Tu abono de $${fmt(monto)} fue recibido y será revisado en un máximo de 3 horas. El saldo se actualizará en cuanto se confirme.</div>
+    `;
+  } catch (e) {
+    errEl.textContent = e.message || 'Ocurrió un error, intenta de nuevo.';
+    btn.disabled = false; btn.textContent = 'Enviar abono';
   }
 };
 </script>
