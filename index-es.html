@@ -437,6 +437,7 @@ document.addEventListener('click', (e) => {
 });
 initLadaSelector('tour');
 
+function normalizarFolioIndex(f) { return (f || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function generarFolio() {
   return 'TUR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
 }
@@ -705,7 +706,7 @@ window.crearReservaFirestore = async function(datos) {
     ...datos,
     creado: serverTimestamp(),
   });
-  try { await setDoc(doc(db, 'reservas_index', datos.folio), { coleccion: 'nexora_tours_reservas', docId: ref.id }); } catch (e) {}
+  try { await setDoc(doc(db, 'reservas_index', normalizarFolioIndex(datos.folio)), { coleccion: 'nexora_tours_reservas', docId: ref.id }); } catch (e) {}
   return ref.id;
 };
 
