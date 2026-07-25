@@ -144,10 +144,6 @@ function normalizarFolio(txt) {
   return (txt || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
 
-function normalizarFolio(f) {
-  return (f || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-}
-
 window.buscarReserva = async () => {
   const folioInput = document.getElementById('f-folio');
   const apellidoInput = document.getElementById('f-apellido');
