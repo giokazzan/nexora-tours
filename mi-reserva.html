@@ -140,11 +140,18 @@ if (folioURL) {
 function normalizar(txt) {
   return (txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
+function normalizarFolio(txt) {
+  return (txt || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function normalizarFolio(f) {
+  return (f || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
 
 window.buscarReserva = async () => {
   const folioInput = document.getElementById('f-folio');
   const apellidoInput = document.getElementById('f-apellido');
-  const folio = folioInput.value.trim().toUpperCase().replace(/[^A-Z0-9\-]/g, '');
+  const folio = normalizarFolio(folioInput.value);
   const apellido = normalizar(apellidoInput.value);
   const errEl = document.getElementById('err-msg');
   const resultadoEl = document.getElementById('resultado');
@@ -170,9 +177,11 @@ window.buscarReserva = async () => {
     }
 
     const r = resSnap.data();
+    const esHotelCheck = coleccion === 'nexora_hoteles_reservas';
 
-    // Verificación estilo Volaris: el apellido (o nombre+apellido) debe aparecer dentro del nombre registrado
-    const nombreGuardado = normalizar(r.nombre);
+    // Verificación estilo Volaris: el nombre/apellido debe aparecer en el campo correcto
+    // según el tipo — hoteles guardan "cliente", el resto guarda "nombre".
+    const nombreGuardado = normalizar(esHotelCheck ? r.cliente : r.nombre);
     if (!nombreGuardado.includes(apellido)) {
       errEl.textContent = 'No encontramos una reserva con esos datos. Revisa que el folio y el apellido estén bien escritos.';
       return;
@@ -181,7 +190,7 @@ window.buscarReserva = async () => {
     const esTour = coleccion === 'nexora_tours_reservas';
     const esVehiculo = coleccion === 'nexora_vehiculos_reservas';
     const esTraslado = coleccion === 'nexora_traslados_reservas';
-    const esHotel = coleccion === 'nexora_hoteles_reservas';
+    const esHotel = esHotelCheck;
 
     if (esHotel) {
       renderPaseHotel(r, folio, docId);
