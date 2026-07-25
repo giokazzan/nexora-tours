@@ -370,6 +370,7 @@ function unlockBodyScroll() {
 window.closeModal = () => { document.getElementById('modal-overlay').classList.remove('open'); unlockBodyScroll(); };
 window.handleOverlayClick = (e) => { if (e.target.id === 'modal-overlay') closeModal(); };
 
+function normalizarFolioIndex(f) { return (f || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function generarFolio() { return 'TRL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(); }
 
 function comprimirImagenSiEsNecesario(file) {
@@ -511,7 +512,7 @@ window.submitReserva = async () => {
       comprobanteUrl: resultSubida.url, estado: 'pendiente',
       expira: expira.toISOString(), creado: serverTimestamp(),
     });
-    try { await setDoc(doc(db, 'reservas_index', folio), { coleccion: 'nexora_traslados_reservas', docId: refCreada.id }); } catch (e) {}
+    try { await setDoc(doc(db, 'reservas_index', normalizarFolioIndex(folio)), { coleccion: 'nexora_traslados_reservas', docId: refCreada.id }); } catch (e) {}
 
     btn.textContent = 'Enviando confirmación...';
     try {
