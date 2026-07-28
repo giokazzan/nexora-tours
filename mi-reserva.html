@@ -78,6 +78,11 @@ p.sub{color:var(--gray);font-size:.88rem;margin-bottom:24px;line-height:1.5;}
 .transfer-box .r{display:flex;justify-content:space-between;}
 .transfer-box .r span:first-child{color:var(--gray);}
 .transfer-box .r strong{color:var(--teal-light);}
+@media print{
+  body *{visibility:hidden}
+  #pase-imprimible, #pase-imprimible *{visibility:visible}
+  #pase-imprimible{position:absolute;top:0;left:0;width:100%}
+}
 </style>
 </head>
 <body>
@@ -207,6 +212,8 @@ window.buscarReserva = async () => {
     }
     const estado = r.estado || 'pendiente';
 
+    window.ultimaReservaTraslado = esTraslado ? { ...r, folio } : null;
+
     resultadoEl.innerHTML = `
       <span class="badge ${estado}">${estado}</span>
       <div class="res-titulo">${icono} ${nombreProducto}</div>
@@ -215,6 +222,7 @@ window.buscarReserva = async () => {
       <div class="res-linea"><span>Total</span><strong>$${fmt(totalTexto)} MXN</strong></div>
       <div class="res-linea"><span>Anticipo</span><strong>$${fmt(r.deposito)} MXN</strong></div>
       <div class="mensaje-estado ${estado}">${MENSAJES[estado] || ''}</div>
+      ${esTraslado && estado === 'confirmada' ? `<button class="abono-toggle" onclick="mostrarPaseTraslado()">🎫 Ver mi pase de abordaje</button>` : ''}
     `;
     resultadoEl.style.display = 'block';
   } catch (e) {
@@ -222,6 +230,53 @@ window.buscarReserva = async () => {
   } finally {
     btn.disabled = false; btn.textContent = 'Buscar mi reserva';
   }
+};
+
+window.mostrarPaseTraslado = () => {
+  const r = window.ultimaReservaTraslado;
+  if (!r) return;
+  const d = r.datosViaje || {};
+  const esLlegada = d.tipo === 'llegada';
+
+  const origen = esLlegada ? 'Aeropuerto Internacional de Cancún' : (d.hotelOrigen || '');
+  const destino = esLlegada ? (d.hotelDestino || '') : 'Aeropuerto Internacional de Cancún';
+  const horaTexto = esLlegada
+    ? `Llegada: ${d.fecha || ''} · ${d.hora || ''} · ${d.aerolinea || ''} ${d.vuelo || ''}`
+    : `Pick-up: ${d.horaPickupCalculada || 'por confirmar'} · Vuelo ${d.fechaVuelo || ''} ${d.horaVuelo || ''} · ${d.vuelo || ''}`;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'pase-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,15,22,.92);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+  overlay.innerHTML = `
+    <div style="max-width:420px;width:100%">
+      <button onclick="document.getElementById('pase-overlay').remove()" style="display:block;margin:0 0 12px auto;background:none;border:none;color:#fff;font-size:24px;cursor:pointer">✕</button>
+      <div class="hpase" id="pase-imprimible">
+        <div class="hpase-top">
+          <div class="hpase-hotel">🚐 ${r.trasladoNombre || 'Traslado'}${r.redondo ? ' (redondo)' : ''}</div>
+          <span class="hpase-badge">Reserva confirmada</span>
+        </div>
+        <div class="hpase-ruta">
+          <div class="hpase-punto"><div class="lbl">Origen</div><div class="val" style="font-size:14px">${origen}</div></div>
+          <div style="color:#c9a84c;font-size:18px">→</div>
+          <div class="hpase-punto der"><div class="lbl">Destino</div><div class="val" style="font-size:14px">${destino}</div></div>
+        </div>
+        <div class="hpase-perf"></div>
+        <div class="hpase-detalles">
+          <div class="hpase-campo full"><div class="lbl">Titular</div><div class="val">${r.nombre || ''}</div></div>
+          <div class="hpase-campo"><div class="lbl">Pasajeros</div><div class="val">${r.pasajeros || 1}</div></div>
+          <div class="hpase-campo"><div class="lbl">Zona</div><div class="val">${r.zonaNombre || d.zona || ''}</div></div>
+          <div class="hpase-campo full"><div class="lbl">${esLlegada ? 'Vuelo' : 'Recolección'}</div><div class="val" style="font-size:13px">${horaTexto}</div></div>
+          <div class="hpase-campo full"><div class="lbl">Folio</div><div class="val">${r.folio}</div></div>
+        </div>
+        <div class="hpase-pago">
+          <div class="fila"><span>Total</span><strong>$${fmt(r.totalMXN)} MXN</strong></div>
+          <div class="fila"><span>Anticipo</span><strong>$${fmt(r.deposito)} MXN</strong></div>
+        </div>
+      </div>
+      <button class="abono-toggle" style="margin-top:14px" onclick="window.print()">🖨️ Guardar / Imprimir</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
 };
 
 function renderPaseHotel(r, folio, docId) {
